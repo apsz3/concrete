@@ -48,6 +48,10 @@ num quad = QUADRATIC(1,1,1,1)
 # str bad_return_type = inc(1) # TypeError:36:2 Cannot assign bad_return_type of str to expression of type num
 # num bad_input_type = inc("a") # TypeError:inc: Expected num for v; got str
 
+# TypeError:52:6 Function bad of return type str but got expression of num
+# fun bad () -> str {
+#     return 1
+# }
 
 # Known issues
 # Lexical scoping of function parameters when the symbol exists in global scope
