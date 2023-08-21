@@ -3,6 +3,8 @@ A first foray into a statically-typed language, which is implemented as a byteco
 This demo does not have a REPL. `python3 concrete.py` will run the code in `demo.ccr`.
 Expressions that are ill-typed are commented out in the demo code. Remove the comment and re-run the command to see the compiler errors.
 
+Warning: the implementations here aren't pretty, and have known bugs. I've put them on Git specifically for my application here. First, they represent fast-moving experimentation; to this end, they are written in Python, my primary language, which conveniently has robust builtin types, compared to C. Next, they could certainly be designed more efficiently with better practices. However, I am generally happy with the features accomplished thus-far.
+
 The below code is copied from `demo.ccr`
 
 ```
