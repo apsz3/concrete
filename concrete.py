@@ -196,10 +196,14 @@ class CCRParser(Parser):
 
     @_('IF expr statement_list END')
     def expr(self, p):
+        if p.statement_list is None:
+            return ('if', p.expr, (ENUM.END_OF_STMTS,))
         return ('if', p.expr, p.statement_list)
 
     @_('IF expr statement_list ELSE statement_list END')
     def expr(self, p):
+        if p.statement_list0 is None:
+            return ('if', p.expr, (ENUM.END_OF_STMTS,), p.statement_list1)
         return ('ifelse', p.expr, p.statement_list0, p.statement_list1)
 
     @_('call')
@@ -379,14 +383,12 @@ def compile(stmt, buf, env, scope):
         compile(stmt[1], buf, env, scope)
         pos = len(buf) # current location
         emit('jmpif', None, buf=buf)
-        for s in walk_stmt_list(stmt[2]):
+        for s in walk_stmt_list_base(stmt[2]):
             print(">>>", s)
             compile(s, buf, env, scope)
         cur_pos = len(buf)
         buf[pos] = ('jmpif', cur_pos) # Backpatch
-    elif op == "print":
-        compile(stmt[1], buf, env, scope)
-        emit('print', buf=buf)
+
     elif op == 'fun_def':
         # eventually, we will need to write to a <label> in the ASM
         # file. But parsing the ASM file requires an assembler,
@@ -562,6 +564,24 @@ def walk_stmt_list(ast):
         next = next[1]
         hd = next[0]
 
+def walk_stmt_list_base(ast):
+    # Start at ast[1] because ast[0] will be the
+    # opcode that is followed by the statement list.
+    next = ast[1]
+    if next is None:
+        return
+    hd = next[0]
+    while True:
+        if hd == ENUM.END_OF_STMTS:
+            return
+        elif hd == ENUM.END_OF_FN_ARGS:
+            return
+        if type(hd) is not tuple:
+            assert False, "Shouldn't have ended here -- need end of stmts"
+
+        yield hd
+        next = next[1]
+        hd = next[0]
 def check(node, env, scope="__module__"):
     # Check the head of the ast, determining its type validity
     # This can involve recursively checking component of it,
@@ -790,7 +810,7 @@ def vm(code, compilation_env):
             ip += 1
             op = instr[0]
             if op == 'print':
-                print(stack[-1])
+                print(stack.pop())
             if op == 'pstr':
                 stack.append(instr[1].strip('"'))
             if op == 'pnum':
