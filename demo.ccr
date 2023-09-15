@@ -133,3 +133,21 @@ num quad = QUADRATIC(1,1,1,1)
 # ('var_assgn',)
 # [] {'x': 2.0, 'y': 3.0, 'abc': 'abc', '_def': 'defabc', 'incd': 4.0, 'quad': 3.0}
 # {'_def': 'defabc', 'abc': 'abc', 'incd': 4.0, 'quad': 3.0, 'x': 2.0, 'y': 3.0}
+
+
+fun foo  (num x) -> num {
+    print "hello"
+    x = 2
+    return x
+}
+
+print "A"
+print x
+print (x + 2 + 3)
+
+if true
+print("GOTCHA")
+print("the end")
+num x =2
+end
+

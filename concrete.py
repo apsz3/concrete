@@ -8,23 +8,28 @@ from sly import Lexer, Parser
 # ---------- Lexer
 HAS_LEXER_ERROR = False
 class CCRLexer(Lexer):
-    tokens = {  TYPE, BOOLEAN, ID, NUMBER, STRING, FUN, BOP, RETURN, FUN_RET_SYNTAX, CONST}
+    tokens = {  TYPE, BOOLEAN, ID, NUMBER, STRING, FUN, BOP, RETURN, FUN_RET_SYNTAX, CONST, IF, ELSE, END, PRINT}
+
     ignore = ' \t'
     BOP = r">=|<=|==|!="
     BOOLEAN = r"true|false"
     literals = { '!', '=', ',', '+', '-', '*', '/', '(', ')' , '[', ']', ';', '"', "'", "{", "}", ">", "<",}
 
+    IF = r"if"
+    ELSE = r"else"
+    END = r"end"
     STRING = r'".*"'
     FUN = r"fun"
     RETURN = r"return"
     CONST = r"const"
+    PRINT = r"print"
 
     NUMBER = r'\d+|0x[0-9a-fA-F]+'
     FUN_RET_SYNTAX = r"\->"
 
 
 
-    TYPE = r'num|str|fun|void|bool' # MUST MATCH THESE FIRST BEFORE ID
+    TYPE = r'num|str|fun|void|bool|any' # MUST MATCH THESE FIRST BEFORE ID
     # NOTE: this also messes things up and means we can't prefix
     # things with a type name ?
     ID = r'[a-zA-Z_][a-zA-Z0-9_]*' # no leading numerics
@@ -105,6 +110,13 @@ class CCRParser(Parser):
             return (p.statement, ls)
         return (p.statement, (ENUM.END_OF_STMTS,))
 
+    @_('expr statement_list')
+    def statement_list(self, p):
+        ls = p.statement_list
+        if ls:
+            return (p.expr, ls)
+        return (p.expr, (ENUM.END_OF_STMTS,))
+
     @_('')
     def statement_list(self, p):
         # TODO: need a better ret val
@@ -133,6 +145,11 @@ class CCRParser(Parser):
     @_('RETURN expr')
     def statement(self, p):
         return ('return', p.expr, (p.index, p.lineno))
+
+    @_('PRINT expr')
+    def statement(self, p):
+        return ('print', p.expr, (p.index, p.lineno))
+
 
     @_('FUN ID "(" fn_arglist ")" FUN_RET_SYNTAX TYPE "{" fn_body "}"')
     def statement(self, p):
@@ -176,6 +193,14 @@ class CCRParser(Parser):
     @_("")
     def fn_call_args(self, p):
         return  (ENUM.END_OF_FN_ARGS,)
+
+    @_('IF expr statement_list END')
+    def expr(self, p):
+        return ('if', p.expr, p.statement_list)
+
+    @_('IF expr statement_list ELSE statement_list END')
+    def expr(self, p):
+        return ('ifelse', p.expr, p.statement_list0, p.statement_list1)
 
     @_('call')
     def expr(self, p):
@@ -339,6 +364,9 @@ def compile(stmt, buf, env, scope):
         emit(f'p{type}', stmt[2], buf=buf)
     elif op == 'loadvar':
         emit('pval', stmt[1], buf=buf)
+    elif op == 'print':
+        compile(stmt[1], buf, env, scope)
+        emit('print', buf=buf)
     elif op == 'neg':
         compile(stmt[1], buf, env, scope)
         emit('neg', buf=buf)
@@ -347,6 +375,18 @@ def compile(stmt, buf, env, scope):
         compile(stmt[1], buf, env, scope)
         compile(stmt[2], buf, env, scope)
         emit(op, buf=buf)
+    elif op == 'if':
+        compile(stmt[1], buf, env, scope)
+        pos = len(buf) # current location
+        emit('jmpif', None, buf=buf)
+        for s in walk_stmt_list(stmt[2]):
+            print(">>>", s)
+            compile(s, buf, env, scope)
+        cur_pos = len(buf)
+        buf[pos] = ('jmpif', cur_pos) # Backpatch
+    elif op == "print":
+        compile(stmt[1], buf, env, scope)
+        emit('print', buf=buf)
     elif op == 'fun_def':
         # eventually, we will need to write to a <label> in the ASM
         # file. But parsing the ASM file requires an assembler,
@@ -545,7 +585,15 @@ def check(node, env, scope="__module__"):
         # TODO: seems redundant.
         print(f"TypeError: Cannot redefine {node[2]} -- already defined")
         return ENUM.INVALID_TYPE
-    if op == 'var_decl':
+
+    if op == "if":
+        cond_t = check(node[1], env)
+        if cond_t != "bool":
+            print(f"TypeError: Expect boolean value for expression {node[1]}")
+            return ENUM.INVALID_TYPE
+        expr_t = check(node[1], env)
+        return expr_t # If's return the final expr value
+    elif op == 'var_decl':
         type_var = node[1]
         var_name = node[2]
         _idx, _lineno = node[3]; col = find_column(TEXT, _idx)
@@ -665,6 +713,8 @@ def check(node, env, scope="__module__"):
         return check(node[1], env, scope)
     elif op == ENUM.END_OF_STMTS:
         return True
+    elif op == 'print':
+        return True # Void?
     elif op == 'call':
         # Check that the args on the stack
         # match those expected by the function.
@@ -736,9 +786,11 @@ def vm(code, compilation_env):
         ip,code,stack= call_stack_ptrs.pop()
         while ip < len(code):
             instr = code[ip]
-            print(instr)
+            print("{:>12}  {}".format(ip, instr))
             ip += 1
             op = instr[0]
+            if op == 'print':
+                print(stack[-1])
             if op == 'pstr':
                 stack.append(instr[1].strip('"'))
             if op == 'pnum':
@@ -760,6 +812,11 @@ def vm(code, compilation_env):
             if op == 'var_decl':
                 var = stack.pop()
                 symbol_table[var] = ENUM.UNINIT_VAL # Default to nothing.
+            if op == 'jmpif':
+                if not stack[-1]:
+                    ip = instr[1]
+                    continue
+
             if op == 'var_assgn':
 
 
@@ -826,7 +883,7 @@ def vm(code, compilation_env):
                 arg_stack_vals.reverse() # why do i have to do this when i went through all the trouble to do it before?
                 stack = arg_stack_vals
                 #call_stack_ptrs.append((0, data['code']))
-                #break # essentially, JMP, indicating
+                #break # essentially, jmpt, indicating
                 # a context switch
             if op == 'ret':
                 print(f"Leaving: {symbol_table}")
@@ -864,13 +921,13 @@ if __name__ == '__main__':
 #    pprint(ast)
     if not HAS_LEXER_ERROR and not HAS_PARSER_ERROR and well_typed:
         code = walk(ast, env, '__module__') # compiling at the top-level
-        pprint(code)
-        pprint(env)
+        # pprint(code)
+        # pprint(env)
         print('--------')
         stack, symbol_table = vm(code, env)
-        pprint(env)
+        #pprint(env)
         print("--------")
-        pprint(symbol_table)
+        #pprint(symbol_table)
     if not well_typed:
         print("NOT WELL TYPED")
     if HAS_LEXER_ERROR:
