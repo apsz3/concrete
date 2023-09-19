@@ -198,7 +198,7 @@ class CCRParser(Parser):
     def expr(self, p):
         if p.statement_list is None:
             return ('if', p.expr, (ENUM.END_OF_STMTS,))
-        return ('if', p.expr, p.statement_list)
+        return ('if', p.expr, (p.statement_list,))
 
     @_('IF expr statement_list ELSE statement_list END')
     def expr(self, p):
@@ -384,7 +384,6 @@ def compile(stmt, buf, env, scope):
         pos = len(buf) # current location
         emit('jmpif', None, buf=buf)
         for s in walk_stmt_list_base(stmt[2]):
-            print(">>>", s)
             compile(s, buf, env, scope)
         cur_pos = len(buf)
         buf[pos] = ('jmpif', cur_pos) # Backpatch
@@ -565,9 +564,7 @@ def walk_stmt_list(ast):
         hd = next[0]
 
 def walk_stmt_list_base(ast):
-    # Start at ast[1] because ast[0] will be the
-    # opcode that is followed by the statement list.
-    next = ast[1]
+    next = ast[0]
     if next is None:
         return
     hd = next[0]
@@ -941,7 +938,7 @@ if __name__ == '__main__':
 #    pprint(ast)
     if not HAS_LEXER_ERROR and not HAS_PARSER_ERROR and well_typed:
         code = walk(ast, env, '__module__') # compiling at the top-level
-        # pprint(code)
+        pprint(code)
         # pprint(env)
         print('--------')
         stack, symbol_table = vm(code, env)
