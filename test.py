@@ -1,3 +1,37 @@
+"""
+We are developing a statically typed imperative language called Concrete.
+
+The base data types are `num`, `str`, `bool`
+
+This code illustrates the tenants of the language
+
+```
+num N = 5 # Assignment Statement
+num _N = N + 1 # expression on the right hand side
+# str N = 5 # Will raise NotWellTypedException; str N = "5" wouldn't.
+fun fib (num n) -> num {
+    num n = n # The language is lexically scoped
+    if num == 0 return 0 end
+    if num == 1 return 1 end
+    return fib(n-1) + fib(n-2)
+}
+fib(N) # The S-expression tree can accept expressions and statements
+```
+
+The execution entry point is by calling the function RUN ("some Concrete program string")
+Execution returns a stack (list) and symbol table (dict):
+
+stack, sym = RUN("some Concrete source code string")
+
+To check the end-program state, inspect the values on `stack`.
+For example, we would expect running the above to leave 13 as the only
+element on the stack.
+
+Generate parametrized tests in the Pytest framework for this language, divided
+into separate functions. There should be test functions for type checking (valid types),
+type checking invalid types (which should raise NotWellTypedException), expressions,
+sequences of statements, functions, and large programs
+"""
 import pytest
 
 import concrete as cc
@@ -10,9 +44,10 @@ import concrete as cc
     "bool x = 1",
 ])
 def test_invalid_typing(c):
+    RUN = cc.concrete.Concrete().run
     with pytest.raises(cc.exceptions.NotWellTypedException): #as e:
         # Call the function that should throw an exception
-        cc.concrete.Concrete().run(c)
+        RUN(c)
 
 @pytest.mark.parametrize("c", [
     'str x = "a"',
@@ -21,24 +56,22 @@ def test_invalid_typing(c):
     "bool x = true",
 ])
 def test_valid_typing(c):
+    RUN = cc.concrete.Concrete().run
         # Call the function that should throw an exception
-    cc.concrete.Concrete().run(c)
+    RUN(c)
 #    assert str(e.value) == "Expected Exception message"  # Replace "Expected Exception message" with the actual expected exception message
 
 @pytest.mark.parametrize("expr, res", [
-    ("num x = 1 num y = 2 x + y", 3)
+    ("num x = 1 num y = 2 x + y", 3),
+    ("num x = 1 x", 1)
 ])
-def test_valid_typing(expr, res):
+def test_sequence(expr, res):
         # Call the function that should throw an exception
-    stack, sym = cc.concrete.Concrete().run(expr)
+    RUN = cc.concrete.Concrete().run
+    stack, sym = RUN(expr)
     assert len(stack) == 1
     assert stack.pop() == res
 #    assert str(e.value) == "Expected Exception message"  # Replace "Expected Exception message" with the actual expected exception message
-
-
-def function_that_throws_exception():
-    raise Exception("Expected Exception message")
-
 # def test_demo():
 #     with open("tests/fib.ccr", "r") as fp:
 #         text = fp.read()
