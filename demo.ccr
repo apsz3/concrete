@@ -145,7 +145,7 @@ print "A"
 print x
 print (x + 2 + 3)
 
-if true
+if x > 2000000
 print("GOTCHA")
 print("the end")
 num x =2
