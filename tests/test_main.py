@@ -106,6 +106,7 @@ def test_fn_binding(expr,res):
     ("num x = 1 fun id (num x) -> num { return x } id(x)", 1),
     ("num x = 1 fun id (num x) -> num { x = 2 return x } x id(x)", (1.0, 2.0)), # TODO: fix when float/int sorted
     ("num y = 100 fun add (num x, num y) -> num { return x + y } add(1,2)", 3),
+    ("fun add (num x, num y) -> num { num z = x return z + y } add(1,2)", 3),
 ])
 @run_test
 def test_scope(expr, res):

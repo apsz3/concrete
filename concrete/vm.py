@@ -124,7 +124,9 @@ class VM:
                     # break # essentially, jmpt, indicating
                     # a context switch
                 if op == "ret":
-                    print_debug(f"Leaving: {symbol_table}")
+                    print_debug(f"(Leaving)")
+                    print_debug(f"Symbols: {symbol_table}")
+                    print_debug(f"Stack: {stack}")
                     data = get_scope_child(target, compilation_env)
                     if data["ret"] != "void":
                         # Pop the result, put onto new stack
