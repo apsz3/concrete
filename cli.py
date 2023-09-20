@@ -12,7 +12,7 @@ from concrete.lexer import RESERVED
 from concrete.concrete import Concrete
 from concrete.lexer import CCRLexer
 from concrete.parser import CCRParser
-
+from concrete.exceptions import CCRException
 import traceback
 def i(ccr, debug):
     # Create a completer with some example words
@@ -35,14 +35,17 @@ def i(ccr, debug):
                 continue
             stack, _ = ccr.run(inp, debug)
             if len(stack) == 0:
-                click.echo(">")
+                pass
             else:
                 click.echo(stack.pop())
         except EOFError:
             # Exit gracefully on Ctrl+D/EOT
             break
+        except CCRException as e:
+            print(e, end="")
         except Exception as e:
-            print(e)
+            import traceback
+            traceback.print_exc()
 DEBUG = False
 
 @click.command()
@@ -66,7 +69,7 @@ def cli(interactive, string, file, display_help, debug, parse, lex):
             modes.append('lex')
 
     if interactive and not file and not string:
-        i(Concrete())
+        i(Concrete(), debug)
         return
 
     if file:

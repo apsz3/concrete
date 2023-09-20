@@ -1,10 +1,13 @@
-class NotWellTypedException(Exception):
+class CCRException(Exception):
+    pass
+
+class NotWellTypedException(CCRException):
     pass
 
 
-class HasLexerErrorException(Exception):
+class HasLexerErrorException(CCRException):
     pass
 
 
-class HasParserErrorException(Exception):
+class HasParserErrorException(CCRException):
     pass

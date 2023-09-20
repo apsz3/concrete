@@ -8,7 +8,7 @@ from .parser import CCRParser
 from .vm import VM
 from .compiler import walk
 from .exceptions import *
-import concrete.utils as u
+import concrete.utils as utils
 # ---------- VM
 
 class Concrete:
@@ -16,7 +16,7 @@ class Concrete:
         self.env = {"__module__": {"locals": {}}}
 
     def run(self, s, debug=False):
-        u.DEBUG = debug
+        utils.DEBUG = debug
 
         lexer = CCRLexer(s)
         parser = CCRParser(s)
@@ -31,9 +31,13 @@ class Concrete:
             # pprint(env)
             #print("--------")
             stack, symbol_table = VM(code, self.env).run(debug)
-            # pprint(env)
-            #print("--------")
-            # pprint(symbol_table)
+
+            print("#########")
+
+            utils.print_debug(self.env)
+            print("--------")
+            utils.print_debug(symbol_table)
+            print("#########")
 
         if not well_typed:
             raise NotWellTypedException()
@@ -41,3 +45,5 @@ class Concrete:
             raise HasLexerErrorException()
         if parser.HAS_PARSER_ERROR:
             raise HasParserErrorException()
+
+        return stack, symbol_table

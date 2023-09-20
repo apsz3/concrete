@@ -3,21 +3,21 @@ from .cc_typing import TYPE
 from .cc_ast import get_scope_child
 from .utils import print_debug
 class VM:
-    def __init__(self, code, compilation_env):
+    def __init__(self, code, compilation_env, symbol_table = {}):
         self.compilation_env = compilation_env
         self.code = code
+        self.symbol_table = symbol_table
 
     # If I initialize this class, then call run() with debug=False,
     # why does print_debug in _run() still behave as print()?
     def run(self, debug=False):
-        return VM._run(self.code, self.compilation_env, debug)
+        return VM._run(self.code, self.compilation_env, self.symbol_table, debug)
 
     @staticmethod
-    def _run(code, compilation_env, debug=False):
+    def _run(code, compilation_env, symbol_table, debug=False):
         # Note: this will be rewritten in C / ported.
         # (ip, max_ip)
         call_stack_ptrs = [(0, code, [])]
-        symbol_table = {}  # this is a RUNTIME object.
         while call_stack_ptrs:
             ip, code, stack = call_stack_ptrs.pop()
             while ip < len(code):
