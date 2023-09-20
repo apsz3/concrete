@@ -79,19 +79,19 @@ class VM:
                 if op == "gt":
                     a = stack.pop()
                     b = stack.pop()
-                    stack.append(a > b)
+                    stack.append(b > a)
                 if op == "gte":
                     a = stack.pop()
                     b = stack.pop()
-                    stack.append(a >= b)
+                    stack.append(b >= a)
                 if op == "lt":
                     a = stack.pop()
                     b = stack.pop()
-                    stack.append(a < b)
+                    stack.append(b < a)
                 if op == "lte":
                     a = stack.pop()
                     b = stack.pop()
-                    stack.append(a <= b)
+                    stack.append(b <= a)
                 if op == "call":
                     target = instr[1]
                     # Get argument information from context

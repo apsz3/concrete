@@ -32,12 +32,12 @@ class Concrete:
             #print("--------")
             stack, symbol_table = VM(code, self.env).run(debug)
 
-            print("#########")
+            utils.print_debug("#########")
 
             utils.print_debug(self.env)
-            print("--------")
+            utils.print_debug("--------")
             utils.print_debug(symbol_table)
-            print("#########")
+            utils.print_debug("#########")
 
         if not well_typed:
             raise NotWellTypedException()
