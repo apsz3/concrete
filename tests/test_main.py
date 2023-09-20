@@ -108,17 +108,25 @@ def test_fn_binding(expr,res):
     pass
 
 @pytest.mark.parametrize("expr, res", [
+
     ("num x = 1 fun id (num x) -> num { return x } id(x)", 1),
     ("num x = 1 fun id (num x) -> num { x = 2 return x } x id(x)", (1.0, 2.0)), # TODO: fix when float/int sorted
+    ("num y = 100 fun add (num x, num y) -> num { return x + y } add(1,2)", 3),
 ])
 @run_test
 def test_scope(expr, res):
     pass
 
 @pytest.mark.parametrize("expr, res", [
-    ("fun id (num x) -> num { return x } id(1)", 1),
-    ("fun id (num x) -> num { return x } num x = 1 id(x)", 1),
+    ("fun add (num x, num y) -> num { return x + y } add(1,2)", 3),
 ])
 @run_test
-def test_(expr, res):
+def test_fn_advanced(expr, res):
+    pass
+
+@pytest.mark.parametrize("expr, res", [
+    ("if true print(1) end", None)
+])
+@run_test
+def test_cond(expr, res):
     pass
