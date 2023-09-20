@@ -1,6 +1,6 @@
 from enum import Enum
 
-from .cc_ast import get_scope_child, walk_stmt_list, find_outermost_name, find_path_to
+from .cc_ast import get_scope_child, walk_stmt_list, walk_stmt_list_base, find_outermost_name, find_path_to
 from .utils import find_column
 from .parser import PARSE_ENUM
 
@@ -125,10 +125,11 @@ class Checker:
             if cond_t != "bool":
                 print(f"TypeError: Expect boolean value for expression {node[1]}")
                 return TYPE.INVALID_TYPE
-            # expr_t = None # Might just be void / nothing in the stmt list.
-            # for stmt in walk_stmt_list(node[2]):
-                # expr_t = self.check(stmt, env)
-            return cond_t
+            expr_t = None # Might just be void / nothing in the stmt list.
+            for stmt in walk_stmt_list_base(node[2]):
+                expr_t = self.check(stmt, env)
+                #print(UNINIT_TYPE_MAP[expr_t])
+            return expr_t
             #return expr_t  # If's return the final expr value
         elif op == "var_decl":
             type_var = node[1]
