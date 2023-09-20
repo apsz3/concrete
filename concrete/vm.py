@@ -14,12 +14,15 @@ class VM:
         return VM._run(self.code, self.compilation_env, self.symbol_table, debug)
 
     @staticmethod
-    def _run(code, compilation_env, symbol_table, debug=False):
+    def _run(code, compilation_env, _symbol_table, debug=False):
         # Note: this will be rewritten in C / ported.
         # (ip, max_ip)
-        call_stack_ptrs = [(0, code, [])]
+        symbol_table = {}
+        symbol_table.update(_symbol_table) # In case we are continuing
+        call_stack_ptrs = [(0, code, [], symbol_table)]
+        # some sort of REPL-like loop.
         while call_stack_ptrs:
-            ip, code, stack = call_stack_ptrs.pop()
+            ip, code, stack, symbol_table = call_stack_ptrs.pop()
             while ip < len(code):
                 instr = code[ip]
                 print_debug("{:>12}  {}".format(ip, instr))

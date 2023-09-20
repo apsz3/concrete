@@ -21,7 +21,7 @@ def function_that_throws_exception():
     raise Exception("Expected Exception message")
 
 def test_demo():
-    with open("demo.ccr", "r") as fp:
+    with open("tests/fib.ccr", "r") as fp:
         text = fp.read()
         cc().run(text)
 

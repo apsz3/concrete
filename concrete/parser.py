@@ -10,15 +10,18 @@ class PARSE_ENUM(Enum):
     END_OF_STMTS = 2
 
 class CCRParser(Parser):
+    # TODO: MUCH BETTER ERROR PRINTING https://sly.readthedocs.io/en/latest/sly.html#recovery-and-resynchronization-with-error-rules
+    debugfile = "parser.out"
     tokens = CCRLexer.tokens
 
     # TODO: this parse error thing might be global....
     HAS_PARSER_ERROR = False
     precedence = (
+        ("nonassoc", "BOP"),
         ("right", "UMINUS"),
-        ("left", "BOP"),
         ("left", "+", "-"),
         ("left", "*", "/"),
+
     )
 
     def __init__(self, text):
@@ -43,6 +46,14 @@ class CCRParser(Parser):
     def s(self, p):
         return p
 
+
+    @_("expr statement_list")
+    def statement_list(self, p):
+        ls = p.statement_list
+        if ls:
+            return (p.expr, ls)
+        return (p.expr, (PARSE_ENUM.END_OF_STMTS,))
+
     # You don't actually need statement terminators!
     @_("statement statement_list")
     def statement_list(self, p):
@@ -51,12 +62,6 @@ class CCRParser(Parser):
             return (p.statement, ls)
         return (p.statement, (PARSE_ENUM.END_OF_STMTS,))
 
-    @_("expr statement_list")
-    def statement_list(self, p):
-        ls = p.statement_list
-        if ls:
-            return (p.expr, ls)
-        return (p.expr, (PARSE_ENUM.END_OF_STMTS,))
 
     @_("")
     def statement_list(self, p):
