@@ -125,7 +125,9 @@ class Checker:
             if cond_t != "bool":
                 print(f"TypeError: Expect boolean value for expression {node[1]}")
                 return TYPE.INVALID_TYPE
-            #expr_t = self.check(node[2], env)
+            # expr_t = None # Might just be void / nothing in the stmt list.
+            # for stmt in walk_stmt_list(node[2]):
+                # expr_t = self.check(stmt, env)
             return cond_t
             #return expr_t  # If's return the final expr value
         elif op == "var_decl":
