@@ -1,5 +1,5 @@
 num x = 5
-if x > 4 print("Greater") end
+if x > 4 num z = 3 print("Greater") z end
 if x < 4 print("Less than") end
 if x <= 4 print("Less than eq") end
 if x >= 4 print("GT than eq") end
