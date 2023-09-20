@@ -1,5 +1,1 @@
-fun fib (num x) -> num {
-    num z = x
-    z z z return z
-}
-fib(1)
+fun x (num z) -> num { if z > 1 return 1 end return 2 } x(1)

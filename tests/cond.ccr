@@ -3,7 +3,3 @@ if x > 4 num z = 3 print("Greater") end
 if x < 4 print("Less than") end
 if x <= 4 print("Less than eq") end
 if x >= 4 print("GT than eq") end
-
-fun x () -> num { if true return 1 end return 2 } x()
-
-x = if true 1 end # TODO: this needs to be some sort of error

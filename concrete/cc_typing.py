@@ -71,6 +71,9 @@ class Checker:
                 # print it; otherwise, return it as a msg to the outer scope.
                 type_err = True
             if child_node[0] == "return":
+                # TODO: check branches of conditional
+                # that if it has an If and a type annotation,
+                # then it must have a second return somewhere!
                 HAVE_RETURN = True
                 # Could also detect dead code this way.
                 if t != ret_t:
@@ -121,13 +124,18 @@ class Checker:
             # TODO: cond_t comes back as invalid type
             # because if you do a loadvar it isn't found
             # if you're passing a function arg.
-            cond_t = self.check(node[1], env)
+            cond_t = self.check(node[1], env, scope)
             if cond_t != "bool":
                 print(f"TypeError: Expect boolean value for expression {node[1]}")
                 return TYPE.INVALID_TYPE
             expr_t = None # Might just be void / nothing in the stmt list.
+            # TODO: the problem is that the function argument types aren't
+            # added to the environment.
+            # We can't deduce the type of the expression
+            # for this reason.
+            # We need to do so!
             for stmt in walk_stmt_list_base(node[2]):
-                expr_t = self.check(stmt, env)
+                expr_t = self.check(stmt, env, scope)
                 #print(UNINIT_TYPE_MAP[expr_t])
             return expr_t
             #return expr_t  # If's return the final expr value
