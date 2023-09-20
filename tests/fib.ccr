@@ -1,0 +1,4 @@
+fun fib (num x) -> num {
+    if x return 0 end
+}
+fib(1)
