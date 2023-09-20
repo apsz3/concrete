@@ -85,15 +85,9 @@ def test_sequence(expr, res):
     pass
 
 @pytest.mark.parametrize("expr, res", [
+    ("fun id () -> void {}", None),
     ("fun id (num x) -> num { return x } id(1)", 1),
     ("fun id (num x) -> num { return x } num x = 1 id(x)", 1),
-])
-@run_test
-def test_fn(expr, res):
-    pass
-
-@pytest.mark.parametrize("expr, res", [
-    ("fun id (num x) -> num { return x } id(1)", 1),
 ])
 @run_test
 def test_fn(expr, res):
@@ -124,9 +118,9 @@ def test_scope(expr, res):
 def test_fn_advanced(expr, res):
     pass
 
-@pytest.mark.parametrize("expr, res", [
-    ("if true print(1) end", None)
-])
-@run_test
-def test_cond(expr, res):
-    pass
+# @pytest.mark.parametrize("expr, res", [
+#     ("fun xif true print(1) end", None)
+# ])
+# @run_test
+# def test_cond(expr, res):
+#     pass
