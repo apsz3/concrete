@@ -1,6 +1,7 @@
 # ---------- Compilation
 from .parser import PARSE_ENUM
 from .cc_ast import get_scope_child, walk_stmt_list, walk_stmt_list_base, find_path_to
+from .utils import print_debug
 
 def walk(ast, env, scope):
     buf = []
@@ -144,7 +145,7 @@ def compile(stmt, buf, env, scope):
 
         # emit the fully qualified path name
         # so we don't need to know context when executing.
-        print(scope, fn_name)
+        print_debug(f"Entering {scope}:{fn_name}")
         path_to = find_path_to(fn_name, env, scope)
         emit("call", f"{path_to}.{fn_name}", buf=buf)
     else:
