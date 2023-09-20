@@ -59,6 +59,7 @@ class Checker:
         type_err = False
         for child_node in walk_stmt_list(body):
             # TODO: write child values to 'locals' env.
+            # Also error here!
             t = self.check(child_node, env, scope=f"{namespace_scope}.{fn_name}")
             if t == TYPE.INVALID_TYPE:
                 # The type error should be printed in the sub-call;
