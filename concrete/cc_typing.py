@@ -117,11 +117,15 @@ class Checker:
             return TYPE.INVALID_TYPE
 
         if op == "if":
+            # TODO: cond_t comes back as invalid type
+            # because if you do a loadvar it isn't found
+            # if you're passing a function arg.
             cond_t = self.check(node[1], env)
             if cond_t != "bool":
                 print(f"TypeError: Expect boolean value for expression {node[1]}")
                 return TYPE.INVALID_TYPE
-            expr_t = self.check(node[1], env)
+            expr_t = self.check(node[2], env)
+
             return expr_t  # If's return the final expr value
         elif op == "var_decl":
             type_var = node[1]
@@ -208,6 +212,7 @@ class Checker:
             val = locals.get(node[1], None)
             if val is None:
                 val = find_outermost_name(node[1], env, scope) or None
+                # TODO: the error is here
                 if val == None:
                     print(f"TypeError:{node[1]} not defined")
                     return TYPE.INVALID_TYPE
