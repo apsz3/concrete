@@ -118,9 +118,9 @@ def test_scope(expr, res):
 def test_fn_advanced(expr, res):
     pass
 
-# @pytest.mark.parametrize("expr, res", [
-#     ("fun xif true print(1) end", None)
-# ])
-# @run_test
-# def test_cond(expr, res):
-#     pass
+@pytest.mark.parametrize("expr, res", [
+    ("fun x () -> num { if true return 1 end return 2 } x()", 1)
+])
+@run_test
+def test_cond(expr, res):
+    pass
