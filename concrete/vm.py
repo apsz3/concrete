@@ -17,8 +17,8 @@ class VM:
     def _run(code, compilation_env, _symbol_table, debug=False):
         # Note: this will be rewritten in C / ported.
         # (ip, max_ip)
-        symbol_table = {}
-        symbol_table.update(_symbol_table) # In case we are continuing
+        symbol_table = _symbol_table
+#        symbol_table.update(_symbol_table) # In case we are continuing
         call_stack_ptrs = [(0, code, [], symbol_table)]
         # some sort of REPL-like loop.
         while call_stack_ptrs:
