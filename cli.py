@@ -1,3 +1,5 @@
+from pprint import pprint
+
 import click
 
 from prompt_toolkit import PromptSession
@@ -85,8 +87,11 @@ def cli(interactive, string, file, display_help, debug, parse, lex):
 
 
 def do_modes(modes, src):
+    #TODO: Ovveride the file/tokenize bits so the
+    # instance doesn't need to pass the src around to both the
+    # constructor and the tokenizer method
     for m in modes:
         if m == "lex":
-            print(CCRLexer(src).tokenize(src)) # TODO: Ugly, override super()
+            pprint([_ for _ in CCRLexer(src).tokenize(src)])
         if m == "parse":
-            print(CCRParser(src).parse(src))
+            pprint(CCRParser(src).parse(CCRLexer(src).tokenize(src)))
