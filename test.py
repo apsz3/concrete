@@ -71,6 +71,31 @@ def test_sequence(expr, res):
     stack, sym = RUN(expr)
     assert len(stack) == 1
     assert stack.pop() == res
+
+@pytest.mark.parametrize("expr, res", [
+    ("fun id (num x) -> num { return x } id(1)", 1),
+    ("fun id (num x) -> num { return x } num x = 1 id(x)", 1)
+])
+def test_fn(expr, res):
+        # Call the function that should throw an exception
+    RUN = cc.concrete.Concrete().run
+    stack, sym = RUN(expr)
+    assert len(stack) == 1
+    assert stack.pop() == res
+
+@pytest.mark.parametrize("expr, res", [
+    ("num x = 1 fun id (num x) -> num { return x } id(x)", 1),
+    #("num x = 1 fun id (num x) -> num { num x = 2 return x } id(x)", 2)
+
+])
+def test_scope(expr, res):
+        # Call the function that should throw an exception
+    RUN = cc.concrete.Concrete().run
+    stack, sym = RUN(expr)
+    assert len(stack) == 1
+    assert stack.pop() == res
+
+
 #    assert str(e.value) == "Expected Exception message"  # Replace "Expected Exception message" with the actual expected exception message
 # def test_demo():
 #     with open("tests/fib.ccr", "r") as fp:
