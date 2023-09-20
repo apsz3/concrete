@@ -35,6 +35,17 @@ sequences of statements, functions, and large programs
 import pytest
 
 import concrete as cc
+
+def run_test(func):
+    def wrapper(expr, res):
+        RUN = cc.concrete.Concrete().run
+        stack, sym = RUN(expr)
+        assert len(stack) == 1
+        assert stack.pop() == res
+    return wrapper
+
+
+
 @pytest.mark.parametrize("c", [
     'num x = "a"',
     "num x = true",
@@ -44,10 +55,9 @@ import concrete as cc
     "bool x = 1",
 ])
 def test_invalid_typing(c):
-    RUN = cc.concrete.Concrete().run
     with pytest.raises(cc.exceptions.NotWellTypedException): #as e:
         # Call the function that should throw an exception
-        RUN(c)
+        cc.concrete.Concrete().run(c)
 
 @pytest.mark.parametrize("c", [
     'str x = "a"',
@@ -56,44 +66,39 @@ def test_invalid_typing(c):
     "bool x = true",
 ])
 def test_valid_typing(c):
-    RUN = cc.concrete.Concrete().run
-        # Call the function that should throw an exception
-    RUN(c)
-#    assert str(e.value) == "Expected Exception message"  # Replace "Expected Exception message" with the actual expected exception message
+    cc.concrete.Concrete().run(c)
 
 @pytest.mark.parametrize("expr, res", [
     ("num x = 1 num y = 2 x + y", 3),
     ("num x = 1 x", 1)
 ])
+@run_test
 def test_sequence(expr, res):
-        # Call the function that should throw an exception
-    RUN = cc.concrete.Concrete().run
-    stack, sym = RUN(expr)
-    assert len(stack) == 1
-    assert stack.pop() == res
+    pass
 
 @pytest.mark.parametrize("expr, res", [
     ("fun id (num x) -> num { return x } id(1)", 1),
-    ("fun id (num x) -> num { return x } num x = 1 id(x)", 1)
+    ("fun id (num x) -> num { return x } num x = 1 id(x)", 1),
 ])
+@run_test
 def test_fn(expr, res):
-        # Call the function that should throw an exception
-    RUN = cc.concrete.Concrete().run
-    stack, sym = RUN(expr)
-    assert len(stack) == 1
-    assert stack.pop() == res
+    pass
+
+@pytest.mark.parametrize("expr, res", [
+    ("fun id (num x) -> num { return x } id(1)", 1),
+    ("fun id (num x) -> num { return x } num x = 1 id(x)", 1),
+])
+@run_test
+def test_fn(expr, res):
+    pass
 
 @pytest.mark.parametrize("expr, res", [
     ("num x = 1 fun id (num x) -> num { return x } id(x)", 1),
-    #("num x = 1 fun id (num x) -> num { num x = 2 return x } id(x)", 2)
-
+    ("num x = 1 fun id (num x) -> num { x = 2 return x } id(x)", 2) # Redefine the argument
 ])
+@run_test
 def test_scope(expr, res):
-        # Call the function that should throw an exception
-    RUN = cc.concrete.Concrete().run
-    stack, sym = RUN(expr)
-    assert len(stack) == 1
-    assert stack.pop() == res
+    pass
 
 
 #    assert str(e.value) == "Expected Exception message"  # Replace "Expected Exception message" with the actual expected exception message
@@ -103,3 +108,12 @@ def test_scope(expr, res):
 #         cc().run(text)
 
 # test_demo()
+
+
+@pytest.mark.parametrize("expr, res", [
+    ("fun id (num x) -> num { return x } id(1)", 1),
+    ("fun id (num x) -> num { return x } num x = 1 id(x)", 1),
+])
+@run_test
+def test_fn(expr, res):
+    pass
