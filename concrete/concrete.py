@@ -8,6 +8,7 @@ from .parser import CCRParser
 from .vm import VM
 from .compiler import walk
 from .exceptions import *
+import concrete.utils as u
 # ---------- VM
 
 class Concrete:
@@ -15,6 +16,8 @@ class Concrete:
         self.env = {"__module__": {"locals": {}}}
 
     def run(self, s, debug=False):
+        u.DEBUG = debug
+
         lexer = CCRLexer(s)
         parser = CCRParser(s)
         checker = Checker(s)

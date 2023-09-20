@@ -1,12 +1,14 @@
 from .compiler import emit
 from .cc_typing import TYPE
 from .cc_ast import get_scope_child
-
+from .utils import print_debug
 class VM:
     def __init__(self, code, compilation_env):
         self.compilation_env = compilation_env
         self.code = code
 
+    # If I initialize this class, then call run() with debug=False,
+    # why does print_debug in _run() still behave as print()?
     def run(self, debug=False):
         return VM._run(self.code, self.compilation_env, debug)
 
@@ -20,8 +22,7 @@ class VM:
             ip, code, stack = call_stack_ptrs.pop()
             while ip < len(code):
                 instr = code[ip]
-                if debug:
-                    print("{:>12}  {}".format(ip, instr))
+                print_debug("{:>12}  {}".format(ip, instr))
                 ip += 1
                 op = instr[0]
                 if op == "print":
@@ -120,7 +121,7 @@ class VM:
                     # break # essentially, jmpt, indicating
                     # a context switch
                 if op == "ret":
-                    print(f"Leaving: {symbol_table}")
+                    print_debug(f"Leaving: {symbol_table}")
                     data = get_scope_child(target, compilation_env)
                     if data["ret"] != "void":
                         # Pop the result, put onto new stack

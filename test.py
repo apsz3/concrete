@@ -1,6 +1,6 @@
 import pytest
 
-import concrete as cc
+from concrete import Concrete as cc
 
 @pytest.mark.parametrize("c", [
     "num x = 'a'",
@@ -20,6 +20,9 @@ def test_typing(c):
 def function_that_throws_exception():
     raise Exception("Expected Exception message")
 
-# def test_demo():
-#     with open("demo.ccr", "r") as fp:
-#         text = fp.read()
+def test_demo():
+    with open("demo.ccr", "r") as fp:
+        text = fp.read()
+        cc().run(text)
+
+test_demo()
