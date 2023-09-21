@@ -23,8 +23,17 @@ class Concrete:
         ast = parser.parse(lexer.tokenize(s))
         _well_typed = checker.check_ast(ast, self.env) # This annotates the tree we need for compiling!
         code = walk(ast, self.env, "__module__")
+        # TODO: need to print all the code blocks
+        to_print = [(k, self.env["__module__"][k]) for k in self.env["__module__"] if k != "locals"]
+
         for ip, instr in enumerate(code):
             print("{:>12}  {}".format(ip, instr))
+
+        for fn,val in to_print:
+            print(f"{fn}:")
+            for ip, instr in enumerate(val["code"]):
+                print("{:>12}  {}".format(ip, instr))
+
 
 
     def run(self, s, debug=False):
