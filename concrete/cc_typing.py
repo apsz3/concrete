@@ -78,7 +78,7 @@ class Checker:
                 # Could also detect dead code this way.
                 if t != ret_t:
                     _idx, _lineno = child_node[2]
-                    col = find_column(self.text, _idx)
+                    col = find_column(self.TEXT, _idx)
                     type_err = True
                     print(
                         f"TypeError:{_lineno}:{col} Function {fn_name} of return type {ret_t} but got expression of {t}"
