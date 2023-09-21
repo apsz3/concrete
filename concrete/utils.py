@@ -10,6 +10,8 @@ def find_column(text, idx):
     column = (idx - last_cr) + 1
     return column
 
+from pprint import pprint
 def print_debug(*args, **kwargs):
     if DEBUG:
+        # TODO: pprint dicts / lists
         print(*args, **kwargs)

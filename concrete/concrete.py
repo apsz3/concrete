@@ -53,14 +53,14 @@ class Concrete:
             #print("--------")
             stack, symbol_table = VM(code, self.env).run(debug)
 
-            utils.print_debug("#########")
-            utils.print_debug("#  Env  #")
+            utils.print_debug("--------")
+            utils.print_debug("#- Env -#")
             utils.print_debug(self.env)
             utils.print_debug("--------")
-            utils.print_debug("Sym Tbl")
+            utils.print_debug("#- Sym -#")
             utils.print_debug(symbol_table)
             utils.print_debug("--------")
-            utils.print_debug("  Stack ")
+            utils.print_debug("#- Stk -#")
             utils.print_debug(stack)
 
         if not well_typed:
