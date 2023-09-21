@@ -100,13 +100,16 @@ def compile(stmt, buf, env, scope):
         compile(stmt[2], buf, env, scope)
         emit(op, buf=buf)
     elif op == "if":
+        # TODO: USING AN ARGUMENT ON THE FUNCTION CALL STACK
+        # WILL ISSUE NEW INSTRS ON COMPILATION
+        # AND WILL CHANGE THE POSITION OF THE POINTER?
         compile(stmt[1], buf, env, scope)
         pos = len(buf)  # current location
-        emit("jmpif", None, buf=buf)
+        emit("jmp_if_false", None, buf=buf)
         for s in walk_stmt_list_base(stmt[2]):
             compile(s, buf, env, scope)
         cur_pos = len(buf)
-        buf[pos] = ("jmpif", cur_pos)  # Backpatch
+        buf[pos] = ("jmp_if_false", cur_pos)  # Backpatch
 
     elif op == "fun_def":
         # eventually, we will need to write to a <label> in the ASM

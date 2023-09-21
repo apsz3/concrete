@@ -51,7 +51,8 @@ class VM:
                 if op == "var_decl":
                     var = stack.pop()
                     symbol_table[var] = TYPE.UNINIT_VAL  # Default to nothing.
-                if op == "jmpif":
+                if op == "jmp_if_false":
+                    print_debug(stack)
                     if not stack.pop():
                         ip = instr[1]
                         continue

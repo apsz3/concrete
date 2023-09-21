@@ -4,7 +4,7 @@ if x < 4 print("Less than") end
 if x <= 4 print("Less than eq") end
 if x >= 4 print("GT than eq") end
 if x == 5 print("Eq") end
-
+print("---")
 fun test() -> num {
     num z = 5
 if z > 4 print("Greater") end
@@ -16,6 +16,7 @@ return 1
 }
 
 test()
+print("---")
 
 # WE ARE UNABLE TO ACTUALLY GET THE VALUE
 # OR SEEMINGLY USE IT IN THESE CONDITIONALS ;
