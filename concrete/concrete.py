@@ -15,6 +15,18 @@ class Concrete:
     def __init__(self):
         self.env = {"__module__": {"locals": {}}}
 
+    def bytecode(self, s):
+
+        lexer = CCRLexer(s)
+        parser = CCRParser(s)
+        checker = Checker(s)
+        ast = parser.parse(lexer.tokenize(s))
+        _well_typed = checker.check_ast(ast, self.env) # This annotates the tree we need for compiling!
+        code = walk(ast, self.env, "__module__")
+        for ip, instr in enumerate(code):
+            print("{:>12}  {}".format(ip, instr))
+
+
     def run(self, s, debug=False):
         utils.DEBUG = debug
 

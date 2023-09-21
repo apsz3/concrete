@@ -8,7 +8,7 @@ from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.history import FileHistory
 
 from concrete.lexer import RESERVED
-
+from concrete.compiler import walk
 from concrete.concrete import Concrete
 from concrete.lexer import CCRLexer
 from concrete.parser import CCRParser
@@ -55,18 +55,21 @@ DEBUG = False
 @click.option('-h', '--help', 'display_help', is_flag=True, help='Display help information')
 @click.option('-d', '--debug', is_flag=True, help='Enable debug mode')
 @click.option('-p', '--parse', is_flag=True, help='Enable parse mode')
+@click.option('-c', '--compile', is_flag=True, help='Enable compiler mode')
 @click.option('-l', '--lex', is_flag=True, help='Enable lex mode')
-def cli(interactive, string, file, display_help, debug, parse, lex):
+def cli(interactive, string, file, display_help, debug, parse, lex, compile):
     if display_help:
         click.echo(click.get_current_context().get_help())
         return
 
     modes = []
-    if parse or lex:
+    if parse or lex or compile:
         if parse:
             modes.append('parse')
         if lex:
             modes.append('lex')
+        if compile:
+            modes.append('compile')
 
     if interactive and not file and not string:
         i(Concrete(), debug)
@@ -98,3 +101,5 @@ def do_modes(modes, src):
             pprint([_ for _ in CCRLexer(src).tokenize(src)])
         if m == "parse":
             pprint(CCRParser(src).parse(CCRLexer(src).tokenize(src)))
+        if m == "compile":
+            Concrete().bytecode(src)
