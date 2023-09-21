@@ -121,7 +121,9 @@ def test_fn_advanced(expr, res):
 
 @pytest.mark.parametrize("expr, res", [
     ("fun x () -> num { if true return 1 end return 2 } x()", 1),
-    ("fun x () -> num { if false return 1 end return 2 } x()", 2)
+    ("fun x () -> num { if false return 1 end return 2 } x()", 2),
+    ("fun x (num z) -> num { if z == 1 return 1 end return 2 } x(2)", 2 )
+
 
 ])
 @run_test

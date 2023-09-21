@@ -123,6 +123,8 @@ class VM:
                     # call_stack_ptrs.append((0, data['code']))
                     # break # essentially, jmpt, indicating
                     # a context switch
+                # TODO: What happens to the stack when we leave a function
+                # that doesn't return anything?
                 if op == "ret":
                     print_debug(f"(Leaving)")
                     print_debug(f"Symbols: {symbol_table}")

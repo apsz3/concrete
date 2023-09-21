@@ -1,5 +1,33 @@
-num x = 5
-if x > 4 num z = 3 print("Greater") end
+num x = 1
+if x > 4 print("Greater") end
 if x < 4 print("Less than") end
 if x <= 4 print("Less than eq") end
 if x >= 4 print("GT than eq") end
+if x == 5 print("Eq") end
+
+fun test() -> num {
+    num z = 5
+if z > 4 print("Greater") end
+if z < 4 print("Less than") end
+if z <= 4 print("Less than eq") end
+if z >= 4 print("GT than eq") end
+if z == 5 print("Eq") end
+return 1
+}
+
+test()
+
+# WE ARE UNABLE TO ACTUALLY GET THE VALUE
+# OR SEEMINGLY USE IT IN THESE CONDITIONALS ;
+# SOME SORT OF DEFAULT VALUE IS USED INSTEAD, THEY ALWAYS
+# EVALUATE TO TRUE.
+fun test2(num k) -> num {
+if k > 4 print("Greater") end
+if k < 4 print("Less than") end
+if k <= 4 print("Less than eq") end
+if k >= 4 print("GT than eq") end
+if k == 5 print("Eq") end
+return k
+}
+
+test2(5)
