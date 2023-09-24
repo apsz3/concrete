@@ -1,6 +1,7 @@
 class CCRException(Exception):
     pass
 
+
 class NotWellTypedException(CCRException):
     pass
 

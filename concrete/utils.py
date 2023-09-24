@@ -1,5 +1,6 @@
-
 DEBUG = False
+
+
 # Compute column.
 #     input is the input text string
 #     idx is the index of the token from lexer
@@ -10,7 +11,10 @@ def find_column(text, idx):
     column = (idx - last_cr) + 1
     return column
 
+
 from pprint import pprint
+
+
 def print_debug(*args, **kwargs):
     if DEBUG:
         # TODO: pprint dicts / lists

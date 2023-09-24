@@ -2,8 +2,10 @@ from .compiler import emit
 from .cc_typing import TYPE
 from .cc_ast import get_scope_child
 from .utils import print_debug
+
+
 class VM:
-    def __init__(self, code, compilation_env, symbol_table = {}):
+    def __init__(self, code, compilation_env, symbol_table={}):
         self.compilation_env = compilation_env
         self.code = code
         self.symbol_table = symbol_table
@@ -18,7 +20,7 @@ class VM:
         # Note: this will be rewritten in C / ported.
         # (ip, max_ip)
         symbol_table = _symbol_table
-#        symbol_table.update(_symbol_table) # In case we are continuing
+        #        symbol_table.update(_symbol_table) # In case we are continuing
         call_stack_ptrs = [(0, code, [], symbol_table)]
         # some sort of REPL-like loop.
         while call_stack_ptrs:
@@ -53,17 +55,15 @@ class VM:
                     symbol_table[var] = TYPE.UNINIT_VAL  # Default to nothing.
                 if op == "jmp_if_false":
                     print_debug(stack)
-                    if stack.pop() is False: # NO IMPLICIT BOOLEANS!!!!!
+                    if stack.pop() is False:  # NO IMPLICIT BOOLEANS!!!!!
                         ip = instr[1]
                         continue
 
                 if op == "var_assgn":
-
                     var = stack.pop()
                     val = stack.pop()
                     symbol_table[var] = val
                 if op == "const_assgn":
-
                     var = stack.pop()
                     val = stack.pop()
                     symbol_table[var] = val

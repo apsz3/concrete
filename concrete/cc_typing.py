@@ -1,8 +1,15 @@
 from enum import Enum
 
-from .cc_ast import get_scope_child, walk_stmt_list, walk_stmt_list_base, find_outermost_name, find_path_to
+from .cc_ast import (
+    get_scope_child,
+    walk_stmt_list,
+    walk_stmt_list_base,
+    find_outermost_name,
+    find_path_to,
+)
 from .utils import find_column
 from .parser import PARSE_ENUM
+
 
 class TYPE(Enum):
     UNINIT_T_NUM = 0
@@ -20,6 +27,7 @@ UNINIT_TYPE_MAP = {
     "bool": TYPE.UNINIT_T_BOOL,
 }
 REV_TYPE_MAP = {v: k for k, v in UNINIT_TYPE_MAP.items()}
+
 
 # ---------- Type checking
 class Checker:
@@ -128,7 +136,7 @@ class Checker:
             if cond_t != "bool":
                 print(f"TypeError: Expect boolean value for expression {node[1]}")
                 return TYPE.INVALID_TYPE
-            expr_t = None # Might just be void / nothing in the stmt list.
+            expr_t = None  # Might just be void / nothing in the stmt list.
             # TODO: the problem is that the function argument types aren't
             # added to the environment.
             # We can't deduce the type of the expression
@@ -136,9 +144,9 @@ class Checker:
             # We need to do so!
             for stmt in walk_stmt_list_base(node[2]):
                 expr_t = self.check(stmt, env, scope)
-                #print(UNINIT_TYPE_MAP[expr_t])
+                # print(UNINIT_TYPE_MAP[expr_t])
             return expr_t
-            #return expr_t  # If's return the final expr value
+            # return expr_t  # If's return the final expr value
         elif op == "var_decl":
             type_var = node[1]
             var_name = node[2]
@@ -319,7 +327,7 @@ class Checker:
                     f"TypeError:{fn_name}: expected {len(referred_scope['arglist'])} args, got {len(arg_checks)}"
                 )
                 return TYPE.INVALID_TYPE
-            for (t_actual, (arg_name, t_expected)) in zip(
+            for t_actual, (arg_name, t_expected) in zip(
                 arg_checks, referred_scope["arglist"]
             ):
                 if t_actual != t_expected:
@@ -329,7 +337,6 @@ class Checker:
                     return TYPE.INVALID_TYPE
             return referred_scope["ret"]  # The final value is the return type.
         assert False, f"Didn't process all types. {node}"
-
 
     def check_ast(
         self,
@@ -351,4 +358,3 @@ class Checker:
                 valid = False
             next = next[1]
         return valid
-

@@ -14,12 +14,14 @@ from concrete.lexer import CCRLexer
 from concrete.parser import CCRParser
 from concrete.exceptions import CCRException
 import traceback
+
+
 def i(ccr, debug):
     # Create a completer with some example words
     completer = WordCompleter(RESERVED)
 
     # Create a history object to store previous inputs
-    history = FileHistory('.ccr_history')
+    history = FileHistory(".ccr_history")
 
     # Create a prompt session with autocompletion and history support
     session = PromptSession(
@@ -30,7 +32,7 @@ def i(ccr, debug):
     while True:
         try:
             # Read input from the user
-            inp = session.prompt('> ')
+            inp = session.prompt("> ")
             if not inp:
                 continue
             stack, _ = ccr.run(inp, debug)
@@ -45,18 +47,26 @@ def i(ccr, debug):
             print(e, end="")
         except Exception as e:
             import traceback
+
             traceback.print_exc()
+
+
 DEBUG = False
 
+
 @click.command()
-@click.option('-i', '--interactive', is_flag=True, help='Run in interactive mode')
-@click.option('-s', '--string', default='', help='Interpret a string')
-@click.argument('file', type=click.Path(exists=True, file_okay=True, dir_okay=False), required=False)
-@click.option('-h', '--help', 'display_help', is_flag=True, help='Display help information')
-@click.option('-d', '--debug', is_flag=True, help='Enable debug mode')
-@click.option('-p', '--parse', is_flag=True, help='Enable parse mode')
-@click.option('-c', '--compile', is_flag=True, help='Enable compiler mode')
-@click.option('-l', '--lex', is_flag=True, help='Enable lex mode')
+@click.option("-i", "--interactive", is_flag=True, help="Run in interactive mode")
+@click.option("-s", "--string", default="", help="Interpret a string")
+@click.argument(
+    "file", type=click.Path(exists=True, file_okay=True, dir_okay=False), required=False
+)
+@click.option(
+    "-h", "--help", "display_help", is_flag=True, help="Display help information"
+)
+@click.option("-d", "--debug", is_flag=True, help="Enable debug mode")
+@click.option("-p", "--parse", is_flag=True, help="Enable parse mode")
+@click.option("-c", "--compile", is_flag=True, help="Enable compiler mode")
+@click.option("-l", "--lex", is_flag=True, help="Enable lex mode")
 def cli(interactive, string, file, display_help, debug, parse, lex, compile):
     if display_help:
         click.echo(click.get_current_context().get_help())
@@ -65,11 +75,11 @@ def cli(interactive, string, file, display_help, debug, parse, lex, compile):
     modes = []
     if parse or lex or compile:
         if parse:
-            modes.append('parse')
+            modes.append("parse")
         if lex:
-            modes.append('lex')
+            modes.append("lex")
         if compile:
-            modes.append('compile')
+            modes.append("compile")
 
     if interactive and not file and not string:
         i(Concrete(), debug)
@@ -87,13 +97,12 @@ def cli(interactive, string, file, display_help, debug, parse, lex, compile):
     ccr = Concrete()
     ccr.run(src, debug)
 
-
     if interactive:
         i(ccr, debug)
 
 
 def do_modes(modes, src):
-    #TODO: Ovveride the file/tokenize bits so the
+    # TODO: Ovveride the file/tokenize bits so the
     # instance doesn't need to pass the src around to both the
     # constructor and the tokenizer method
     for m in modes:

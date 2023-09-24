@@ -1,21 +1,10 @@
 # ---------- Lexer
 from sly import Lexer
 
-RESERVED = [
-    "if",
-    "else",
-    "end",
+RESERVED = ["if", "else", "end", "fun", "return", "num", "str", "bool", "void"]
 
-    "fun",
-    "return",
 
-    "num",
-    "str",
-    "bool",
-    "void"
-]
 class CCRLexer(Lexer):
-
     HAS_LEXER_ERROR = False
 
     tokens = {

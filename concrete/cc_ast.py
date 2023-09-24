@@ -1,5 +1,6 @@
-
 from .parser import PARSE_ENUM
+
+
 # ---------- Module / scope resolution
 def get_scope_child(key, env):
     # __foo__.__bar__.<fnmame>
@@ -63,6 +64,7 @@ def find_path_to(name, env, namespace):
         return ".".join(found)
     return None
 
+
 def walk_stmt_list(ast):
     # Start at ast[1] because ast[0] will be the
     # opcode that is followed by the statement list.
@@ -99,5 +101,3 @@ def walk_stmt_list_base(ast):
         yield hd
         next = next[1]
         hd = next[0]
-
-

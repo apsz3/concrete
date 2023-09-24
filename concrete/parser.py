@@ -5,9 +5,11 @@ from .lexer import CCRLexer
 
 from enum import Enum
 
+
 class PARSE_ENUM(Enum):
     END_OF_FN_ARGS = 1
     END_OF_STMTS = 2
+
 
 class CCRParser(Parser):
     # TODO: MUCH BETTER ERROR PRINTING https://sly.readthedocs.io/en/latest/sly.html#recovery-and-resynchronization-with-error-rules
@@ -21,7 +23,6 @@ class CCRParser(Parser):
         ("right", "UMINUS"),
         ("left", "+", "-"),
         ("left", "*", "/"),
-
     )
 
     def __init__(self, text):
@@ -46,7 +47,6 @@ class CCRParser(Parser):
     def s(self, p):
         return p
 
-
     @_("expr statement_list")
     def statement_list(self, p):
         ls = p.statement_list
@@ -61,7 +61,6 @@ class CCRParser(Parser):
         if ls:
             return (p.statement, ls)
         return (p.statement, (PARSE_ENUM.END_OF_STMTS,))
-
 
     @_("")
     def statement_list(self, p):
@@ -148,8 +147,16 @@ class CCRParser(Parser):
 
     @_("IF expr statement_list ELSE statement_list END")
     def expr(self, p):
-        l0 = p.statement_list0 if p.statement_list0 is not None else (PARSE_ENUM.END_OF_STMTS,)
-        l1 = p.statement_list1 if p.statement_list1 is not None else (PARSE_ENUM.END_OF_STMTS,)
+        l0 = (
+            p.statement_list0
+            if p.statement_list0 is not None
+            else (PARSE_ENUM.END_OF_STMTS,)
+        )
+        l1 = (
+            p.statement_list1
+            if p.statement_list1 is not None
+            else (PARSE_ENUM.END_OF_STMTS,)
+        )
         return ("ifelse", p.expr, l0, l1)
 
     @_("call")

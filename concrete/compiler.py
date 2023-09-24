@@ -3,6 +3,7 @@ from .parser import PARSE_ENUM
 from .cc_ast import get_scope_child, walk_stmt_list, walk_stmt_list_base, find_path_to
 from .utils import print_debug
 
+
 def walk(ast, env, scope):
     buf = []
     next = ast[1]
@@ -13,6 +14,7 @@ def walk(ast, env, scope):
         compile(hd, buf, env, scope)
         next = next[1]
     return buf
+
 
 # Contains environment names, which are prefixed with
 # __<name>__.
@@ -153,6 +155,3 @@ def compile(stmt, buf, env, scope):
         emit("call", f"{path_to}.{fn_name}", buf=buf)
     else:
         assert False, f"Unhandled AST node {op}"
-
-
-
