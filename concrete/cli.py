@@ -85,6 +85,7 @@ def cli(interactive, string, file, display_help, debug, parse, lex, compile):
         i(Concrete(), debug)
         return
 
+    src = None
     if file:
         with open(file, "r") as fp:
             src = fp.read()
@@ -94,11 +95,17 @@ def cli(interactive, string, file, display_help, debug, parse, lex, compile):
     if modes:
         do_modes(modes, src)
         return
-    ccr = Concrete()
-    ccr.run(src, debug)
+
+    if src:
+        ccr = Concrete()
+        ccr.run(src, debug)
+        return
 
     if interactive:
         i(ccr, debug)
+        return
+
+    click.echo(click.get_current_context().get_help())
 
 
 def do_modes(modes, src):
