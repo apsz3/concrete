@@ -1,0 +1,2 @@
+
+fun x (num j) -> num { if j < 1 return 1 end return 2 } x(3)
