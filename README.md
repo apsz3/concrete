@@ -1,14 +1,49 @@
-A first foray into a statically-typed language, which is implemented as a bytecode interpreter. Concrete has static typing at the expression level. It also has lexical scoping. The language is not fully featured yet (for example, it lacks control flow), and only supports a few primitive types, but I see these things being added with more time.
+# Concrete (WIP)
 
-This demo does not have a REPL. `python3 concrete.py` will run the code in `demo.ccr`.
-Expressions that are ill-typed are commented out in the demo code. Remove the comment and re-run the command to see the compiler errors.
+Concrete is a statically-typed language, implemented with a bytecode interpreter. Parsing is done using Ply/Sly.
 
-Warning: the implementations here aren't pretty, and have known bugs. I've put them on Git specifically for my application here. First, they represent fast-moving experimentation; to this end, they are written in Python, my primary language, which conveniently has robust builtin types, compared to C. Next, they could certainly be designed more efficiently with better practices. However, I am generally happy with the features accomplished thus-far.
+A potential goal is to make this a lightweight embedded language, similar to Lua, but statically typed.
 
-The below code is copied from `demo.ccr`
+Compiler code likely to be reduced to RPython or rewritten in C.
+
+Codebase is WIP refactoring, transforming from an experimental / hobby project, to something more robust.
 
 ```
-###### Basic functionality
+Usage: ccr [OPTIONS] [FILE]
+
+Options:
+  -i, --interactive  Run in interactive mode
+  -s, --string TEXT  Interpret a string
+  -h, --help         Display help information
+  -d, --debug        Enable debug mode
+  -p, --parse        Enable parse mode
+  -c, --compile      Enable compiler mode
+  -l, --lex          Enable lex mode
+```
+
+Run tests with
+
+`pytest`
+
+
+```
+num a = 1
+fun add (num a, num b) -> num {
+    return a + b
+}
+num res = add(a,a)
+print(res)
+
+# Control flow implemented at global scope,
+# subtle bug WIP in function scope;
+# Else also WIP.
+if res > 1:
+    print("GT 1")
+end
+```
+
+```
+#  Basic functionality
 
 num x = 1
 x = 2
@@ -35,18 +70,6 @@ fun QUADRATIC(num a, num b, num c, num x) -> num {
 
 num quad = QUADRATIC(1,1,1,1)
 
-# Resulting environment after running:
-# {
-#     'x': 2.0,
-#     'y': 3.0
-#     'abc': 'abc',
-#     '_def': 'abcdef',
-#     'incd': 4.0,
-#     'quad': 3.0,
-# }
-
-
-
 # Assignment type errors
 # num x = 1 # TypeError: Cannot redefine x -- already defined
 # x = "a" # TypeError:30:2 Cannot assign x of num to expression of type str
@@ -62,85 +85,8 @@ num quad = QUADRATIC(1,1,1,1)
 # fun bad () -> str {
 #     return 1
 # }
-
-# Known issues
-# Lexical scoping of function parameters when the symbol exists in global scope
-
-# Example of what compiled Bytecode looks like
-
-# ('pnum', '1')
-# ('pid', 'x')
-# ('var_assgn',)
-# ('pnum', '2')
-# ('pid', 'x')
-# ('var_assgn',)
-# ('pval', 'x')
-# ('pnum', '1')
-# ('add',)
-# ('pid', 'y')
-# ('var_assgn',)
-# ('pstr', '"abc"')
-# ('pid', 'abc')
-# ('var_assgn',)
-# ('pval', 'abc')
-# ('pstr', '"def"')
-# ('add',)
-# ('pid', '_def')
-# ('var_assgn',)
-# ('pval', 'y')
-# ('call', '__module__.inc')
-# ('pid', 'v')
-# ('var_assgn',)
-# ('pval', 'v')
-# ('pnum', '1')
-# ('add',)
-# ('ret',)
-# Leaving: {'v': 3.0}
-# ('pid', 'incd')
-# ('var_assgn',)
-# ('pnum', '1')
-# ('pnum', '1')
-# ('pnum', '1')
-# ('pnum', '1')
-# ('call', '__module__.QUADRATIC')
-# ('pid', 'a')
-# ('var_assgn',)
-# ('pid', 'b')
-# ('var_assgn',)
-# ('pid', 'c')
-# ('var_assgn',)
-# ('pid', 'x')
-# ('var_assgn',)
-# ('pval', 'a')
-# ('pid', 'A')
-# ('var_assgn',)
-# ('pval', 'A')
-# ('pval', 'a')
-# ('call', '__module__.QUADRATIC.SQUARE')
-# ('pid', 'x')
-# ('var_assgn',)
-# ('pval', 'x')
-# ('pval', 'x')
-# ('mul',)
-# ('pid', 'i')
-# ('var_assgn',)
-# ('pval', 'x')
-# ('ret',)
-# Leaving: {'x': 1.0, 'i': 1.0}
-# ('mul',)
-# ('pval', 'b')
-# ('pval', 'x')
-# ('mul',)
-# ('add',)
-# ('pval', 'c')
-# ('add',)
-# ('pid', 'res')
-# ('var_assgn',)
-# ('pval', 'res')
-# ('ret',)
-# Leaving: {'a': 1.0, 'b': 1.0, 'c': 1.0, 'x': 1.0, 'A': 1.0, 'res': 3.0}
-# ('pid', 'quad')
-# ('var_assgn',)
-# [] {'x': 2.0, 'y': 3.0, 'abc': 'abc', '_def': 'defabc', 'incd': 4.0, 'quad': 3.0}
-# {'_def': 'defabc', 'abc': 'abc', 'incd': 4.0, 'quad': 3.0, 'x': 2.0, 'y': 3.0}
 ```
+# Known issues
+* Lexical scoping of function parameters when the symbol exists in global scope
+* Bug in conditionals always taking first case in function scope
+* Bug in return type when recursive function calls involved in an expression
