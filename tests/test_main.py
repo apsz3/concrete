@@ -64,9 +64,21 @@ def run_test(func):
         "str x = 1.0",
         "str x = true",
         "bool x = 1",
+        "fun a()->void { return 1}",
+        "fun a()->num { return true}",
     ],
 )
 def test_invalid_typing(c):
+    with pytest.raises(cc.exceptions.NotWellTypedException):  # as e:
+        # Call the function that should throw an exception
+        cc.concrete.Concrete().run(c)
+
+
+@pytest.mark.parametrize(
+    "c",
+    ["fun a()->void {fun b() -> void {}} b()"],
+)
+def test_invalid_scope(c):
     with pytest.raises(cc.exceptions.NotWellTypedException):  # as e:
         # Call the function that should throw an exception
         cc.concrete.Concrete().run(c)
