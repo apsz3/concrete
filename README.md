@@ -2,11 +2,37 @@
 
 Concrete is a statically-typed language, implemented with a bytecode interpreter. Parsing is done using Ply/Sly.
 
+# Example
+
+```
+num n = 10
+fun fib (num n) -> num {
+    if n == 0 return 0 end
+    if n == 1 return 1 end
+    return fib(n-1) + fib(n-2)
+}
+print(fib(n)) # 55
+
+fun quadratic(num a, num b, num c, num x) -> num {
+    # Nested function
+    fun square (num x) -> num {
+       return x * x
+    }
+    num res = square(a) * x + b * x + c
+    return res
+}
+
+print(QUADRATIC(1,1,1,1)) # 3
+```
+
+# About
 A potential goal is to make this a lightweight embedded language, similar to Lua, but statically typed.
 
 Compiler code likely to be reduced to RPython or rewritten in C.
 
 Codebase is WIP refactoring, transforming from an experimental / hobby project, to something more robust.
+
+# Usage
 
 ```
 Usage: ccr [OPTIONS] [FILE]
@@ -21,55 +47,17 @@ Options:
   -l, --lex          Enable lex mode
 ```
 
+# Testing
+
 Run tests with
 
 `pytest`
 
+# Typing
+
+Illustrations of the static typing:
 
 ```
-num a = 1
-fun add (num a, num b) -> num {
-    return a + b
-}
-num res = add(a,a)
-print(res)
-
-# Control flow implemented at global scope,
-# subtle bug WIP in function scope;
-# Else also WIP.
-if res > 1:
-    print("GT 1")
-end
-```
-
-```
-#  Basic functionality
-
-num x = 1
-x = 2
-num y = x + 1
-str abc = "abc"
-str _def = abc + "def"
-
-fun inc (num v) -> num {
-    return v + 1
-}
-
-num incd = inc(y)
-
-fun QUADRATIC(num a, num b, num c, num x) -> num {
-    num A = a
-    # Nested scope
-    fun SQUARE (num x) -> num {
-        num i = x * x
-        return x
-    }
-    num res= (A * SQUARE(a)) + b * x + c
-    return res
-}
-
-num quad = QUADRATIC(1,1,1,1)
-
 # Assignment type errors
 # num x = 1 # TypeError: Cannot redefine x -- already defined
 # x = "a" # TypeError:30:2 Cannot assign x of num to expression of type str
@@ -87,6 +75,6 @@ num quad = QUADRATIC(1,1,1,1)
 # }
 ```
 # Known issues
-* Lexical scoping of function parameters when the symbol exists in global scope
-* Bug in conditionals always taking first case in function scope
-* Bug in return type when recursive function calls involved in an expression
+* [MAYBE NOT BUG] Lexical scoping of function parameters when the symbol exists in global scope
+* [FIXED] Bug in conditionals always taking first case in function scope
+* [FIXED] Bug in return type when recursive function calls involved in an expression
