@@ -4,10 +4,13 @@ fun test(num z) -> str {
     str res = "neq"
     str r
     if z == 1
-        print("a")
+        print("true")
+        print("true")
+
         r = "a"
     end
     return "a"
 }
 
-print(test(2))
+num x = 444
+print(test(1))
