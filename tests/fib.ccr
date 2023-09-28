@@ -1,1 +1,6 @@
-fun x (num z) -> num { if z > 1 return 1 end return 2 } x(1)
+fun fib (num n)-> num {
+    if n == 0 return 0 end
+    if n == 1 return 1 end
+    return fib(n-1)+ fib(n-2)
+}
+print(fib(10))

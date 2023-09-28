@@ -163,10 +163,6 @@ class CCRParser(Parser):
     def expr(self, p):
         return p.call
 
-    @_('"-" expr %prec UMINUS')
-    def expr(self, p):
-        return ("neg", p.expr, (p.index, p.lineno))
-
     @_('expr "+" expr')
     def expr(self, p):
         return ("add", p.expr0, p.expr1, (p.index, p.lineno))
@@ -174,6 +170,10 @@ class CCRParser(Parser):
     @_('expr "-" expr')
     def expr(self, p):
         return ("sub", p.expr0, p.expr1, (p.index, p.lineno))
+
+    @_('"-" expr %prec UMINUS')
+    def expr(self, p):
+        return ("neg", p.expr, (p.index, p.lineno))
 
     @_('expr "*" expr')
     def expr(self, p):

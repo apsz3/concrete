@@ -86,6 +86,20 @@ def test_valid_typing(c):
 
 
 @pytest.mark.parametrize(
+    "expr, res",
+    [
+        ("1", 1),
+        ("1+1", 2),
+        ("1-1", 0),
+        ("1+-1", 0),
+    ],
+)
+@run_test
+def test_simple_expr(expr, res):
+    pass
+
+
+@pytest.mark.parametrize(
     "expr, res", [("num x = 1 num y = 2 x + y", 3), ("num x = 1 x", 1)]
 )
 @run_test
