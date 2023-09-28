@@ -112,11 +112,14 @@ class VM:
                     arg_stack_vals = []
                     symbol_table = {}
                     # Set up the arguments on the function stack frame
+                    # breakpoint()
+                    # NO WONDER. WE EMIT INSTRUCTIONS ILLEGALLY
+                    # HERE WHICH MESSES UP INTERNAL JUMP TARGETS!!!!!!!!
                     for arg, _ in data["arglist"]:
                         val = stack.pop()
                         arg_stack_vals.append(val)
-                        emit("pid", arg, buf=arg_stack_instrs)
-                        emit("var_assgn", buf=arg_stack_instrs)
+                        # emit("pid", arg, buf=arg_stack_instrs)
+                        # emit("var_assgn", buf=arg_stack_instrs)
 
                     code = arg_stack_instrs + code
                     arg_stack_vals.reverse()  # why do i have to do this when i went through all the trouble to do it before?

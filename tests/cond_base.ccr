@@ -1,16 +1,37 @@
 
 
-fun test(num z) -> str {
-    str res = "neq"
-    str r
-    if z == 1
-        print("true")
-        print("true")
+#fun test(num z) -> str {
+#    str res = "neq"
+#    str r
+#    if z == 1
+#        print("true")
+#        print("true")
+#
+#        r = "a"
+#    end
+#    return "a"
+#}
 
-        r = "a"
-    end
-    return "a"
-}
+num k = 444
+num j = 444
 
-num x = 444
-print(test(1))
+#print(test(0))
+
+#fun y () -> num { if false return 1 end return 2 }
+#x()
+#fun x (num z) -> num { if z == 1 return 1 end return 2 }
+#x(1)
+
+# fun x () -> num { if true return 1 end return 2 } x()
+# fun x (num z) -> num { if z == 1 return 1 end return 2 }
+# x() will call the later-defined one without raising type error -- this leads to empty stack bug. FIX.
+
+#fun x () -> num { if true return 1 end return 2 } x()
+
+# REPRODUCE: this is bugged! It is due to pushing fn args.
+# + 2 works if you define one argument; if you redefine this with 2 args, and keep +2, it wont work.
+
+# SECOND BUG: FOR SOME CURSED REASON, MODULES ARE CALLED AFTER THE FIRST NAME??? Top level code is described as "entering __module__:<fn>" but that contains code written at the top level.
+
+
+fun x (num z, num y) -> num { if z == 1 return 1 end return 2 } x(2, 1)

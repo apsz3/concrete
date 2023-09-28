@@ -43,6 +43,9 @@ def compile_fn(node, buf, env, namespace_scope):
         nargs += 1
         rev_args.append(argname)
 
+        emit("pid", argname, buf=codebuf)
+        emit("var_assgn", buf=codebuf)
+
     # Define before compiling body, so we
     # have a target for recursion...
     define_at = get_scope_child(namespace_scope, env)
@@ -113,12 +116,15 @@ def compile(stmt, buf, env, scope):
         compile(stmt[1], buf, env, scope)
         pos = len(buf)  # current location
         emit("jmp_if_false", None, buf=buf)
+        # breakpoint()
         for s in walk_stmt_list_base(stmt[2]):
             compile(s, buf, env, scope)
         cur_pos = len(buf)
         print_buffer(buf)
         print("----")
-        buf[pos] = ("jmp_if_false", cur_pos + 2)  # Backpatch
+        # The big may have to do with when we push arguments on stack
+        # and when we dont, it seems.
+        buf[pos] = ("jmp_if_false", cur_pos)  # Backpatch, +2 hack
         print_buffer(buf)
 
     elif op == "fun_def":
@@ -155,6 +161,7 @@ def compile(stmt, buf, env, scope):
                 # instr is a tuple, we need to unpack it
                 # to fit with emit's expected args
                 emit(*instr, buf=buf)
+        # breakpoint()
 
         # emit the fully qualified path name
         # so we don't need to know context when executing.
