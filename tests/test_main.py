@@ -153,6 +153,13 @@ def test_scope(expr, res):
     "expr, res",
     [
         ("fun add (num x, num y) -> num { return x + y } add(1,2)", 3),
+        (
+            """fun fib (num n)-> num {
+    if n == 0 return 0 end
+    if n == 1 return 1 end
+    return fib(n-1)+ fib(n-2) } fib(10)""",
+            55,
+        ),
     ],
 )
 @run_test
