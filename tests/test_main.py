@@ -160,6 +160,18 @@ def test_scope(expr, res):
     return fib(n-1)+ fib(n-2) } fib(10)""",
             55,
         ),
+        (
+            """
+    # Test demonstrating nested scope
+    fun fib (num n)-> num {
+    fun eqcheck (num a, num cmp) -> bool {
+        return a == cmp
+    }
+    if eqcheck(n, 0) return 0 end
+    if eqcheck(n, 1) return 1 end
+    return fib(n-1)+ fib(n-2) } fib(10)""",
+            55,
+        ),
     ],
 )
 @run_test
