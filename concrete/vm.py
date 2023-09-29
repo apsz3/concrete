@@ -54,11 +54,10 @@ class VM:
                     var = stack.pop()
                     symbol_table[var] = TYPE.UNINIT_VAL  # Default to nothing.
                 if op == "jmp_if_false":
-                    print_debug(stack)
                     if stack.pop() is False:  # NO IMPLICIT BOOLEANS!!!!!
                         ip = instr[1]
-                        continue
-
+                if op == "jmp":
+                    ip = instr[1]
                 if op == "var_assgn":
                     var = stack.pop()
                     val = stack.pop()

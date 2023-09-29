@@ -128,7 +128,7 @@ class Checker:
             print(f"TypeError: Cannot redefine {node[2]} -- already defined")
             return TYPE.INVALID_TYPE
 
-        if op == "if":
+        elif op == "if":
             # TODO: cond_t comes back as invalid type
             # because if you do a loadvar it isn't found
             # if you're passing a function arg.
@@ -147,6 +147,27 @@ class Checker:
                 # print(UNINIT_TYPE_MAP[expr_t])
             return expr_t
             # return expr_t  # If's return the final expr value
+        elif op == "ifelse":
+            # TODO: cond_t comes back as invalid type
+            # because if you do a loadvar it isn't found
+            # if you're passing a function arg.
+            cond_t = self.check(node[1], env, scope)
+            if cond_t != "bool":
+                print(f"TypeError: Expect boolean value for expression {node[1]}")
+                return TYPE.INVALID_TYPE
+            if_expr_t = None
+            # Walk the If branch
+            for stmt in walk_stmt_list_base(node[2]):
+                if_expr_t = self.check(stmt, env, scope)
+
+            else_expr_t = None  # self.check(node[3], env, scope)
+            for stmt in walk_stmt_list_base(node[3]):
+                else_expr_t = self.check(stmt, env, scope)
+
+            if if_expr_t != else_expr_t:
+                print(f"TypeError: Conditional branches must return same type.")
+
+            return if_expr_t
         elif op == "var_decl":
             type_var = node[1]
             var_name = node[2]

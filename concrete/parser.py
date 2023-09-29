@@ -148,12 +148,12 @@ class CCRParser(Parser):
     @_("IF expr statement_list ELSE statement_list END")
     def expr(self, p):
         l0 = (
-            p.statement_list0
+            (p.statement_list0,)
             if p.statement_list0 is not None
             else (PARSE_ENUM.END_OF_STMTS,)
         )
         l1 = (
-            p.statement_list1
+            (p.statement_list1,)
             if p.statement_list1 is not None
             else (PARSE_ENUM.END_OF_STMTS,)
         )

@@ -105,27 +105,36 @@ def compile(stmt, buf, env, scope):
         compile(stmt[2], buf, env, scope)
         emit(op, buf=buf)
     elif op == "if":
-
-        def print_buffer(buf):
-            for i, item in enumerate(buf):
-                print(f"{i:3} : {item}")
-
-        # TODO: USING AN ARGUMENT ON THE FUNCTION CALL STACK
-        # WILL ISSUE NEW INSTRS ON COMPILATION
-        # AND WILL CHANGE THE POSITION OF THE POINTER?
         compile(stmt[1], buf, env, scope)
         pos = len(buf)  # current location
         emit("jmp_if_false", None, buf=buf)
-        # breakpoint()
+
         for s in walk_stmt_list_base(stmt[2]):
             compile(s, buf, env, scope)
         cur_pos = len(buf)
-        print_buffer(buf)
-        print("----")
-        # The big may have to do with when we push arguments on stack
-        # and when we dont, it seems.
-        buf[pos] = ("jmp_if_false", cur_pos)  # Backpatch, +2 hack
-        print_buffer(buf)
+        buf[pos] = ("jmp_if_false", cur_pos)  # Backpatch
+    elif op == "ifelse":
+        compile(stmt[1], buf, env, scope)
+        if_start_pos = len(buf)  # current location
+        emit("jmp_if_false", None, buf=buf)
+        # If branch
+        for s in walk_stmt_list_base(stmt[2]):
+            compile(s, buf, env, scope)
+        # the instrs at this value, works to capture the
+        # instruction we're emitting right now:
+        if_end_pos = len(buf)  # Because of 0-indexing, indexing
+        emit("jmp", None, buf=buf)
+        # Else branch
+        for s in walk_stmt_list_base(stmt[3]):
+            compile(s, buf, env, scope)
+        else_end_pos = len(buf)
+
+        # Jmp to the Else branch if conditional fails;
+        # +1 is because we don't want to jump TO
+        # the "jmp" command, which is technically part of the
+        # "if" branch.
+        buf[if_start_pos] = ("jmp_if_false", if_end_pos + 1)
+        buf[if_end_pos] = ("jmp", else_end_pos)
 
     elif op == "fun_def":
         # eventually, we will need to write to a <label> in the ASM

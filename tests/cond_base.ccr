@@ -12,8 +12,8 @@
 #    return "a"
 #}
 
-num k = 444
-num j = 444
+#num k = 444
+#num j = 444
 
 #print(test(0))
 
@@ -34,4 +34,10 @@ num j = 444
 # SECOND BUG: FOR SOME CURSED REASON, MODULES ARE CALLED AFTER THE FIRST NAME??? Top level code is described as "entering __module__:<fn>" but that contains code written at the top level.
 
 
-fun x (num z, num y) -> num { if z == 1 return 1 end return 2 } x(2, 1)
+#fun x (num z, num y) -> num { if z == 1 return 1 end return 2 } x(2, 1)
+
+if false
+    print("A")
+else
+    print("B")
+end

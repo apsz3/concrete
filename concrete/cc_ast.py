@@ -96,6 +96,7 @@ def walk_stmt_list_base(ast):
         elif hd == PARSE_ENUM.END_OF_FN_ARGS:
             return
         if type(hd) is not tuple:
+            print(hd)
             assert False, "Shouldn't have ended here -- need end of stmts"
 
         yield hd
