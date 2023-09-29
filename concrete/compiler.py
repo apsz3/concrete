@@ -120,9 +120,9 @@ def compile(stmt, buf, env, scope):
         # If branch
         for s in walk_stmt_list_base(stmt[2]):
             compile(s, buf, env, scope)
+        if_end_pos = len(buf)  # Because of 0-indexing, indexing
         # the instrs at this value, works to capture the
         # instruction we're emitting right now:
-        if_end_pos = len(buf)  # Because of 0-indexing, indexing
         emit("jmp", None, buf=buf)
         # Else branch
         for s in walk_stmt_list_base(stmt[3]):
