@@ -41,3 +41,5 @@ if false
 else
     print("B")
 end
+
+str x = if true "a p p l e" else "b" end x

@@ -233,3 +233,16 @@ def test_if(expr, res):
 @run_test
 def test_if_else(expr, res):
     pass
+
+
+@pytest.mark.parametrize(
+    "expr, res",
+    [
+        # ("num x = if true 1 else 2 end x", 1),
+        # ("num x = if false 1 else 2 end x", 2),
+        ('str x = if true "a" else "b" end x', "a")
+    ],
+)
+@run_test
+def test_conditional_expression(expr, res):
+    pass
