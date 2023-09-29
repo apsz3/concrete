@@ -164,27 +164,31 @@ def test_scope(expr, res):
 @pytest.mark.parametrize(
     "expr, res",
     [
+        # fmt: off
         ("fun add (num x, num y) -> num { return x + y } add(1,2)", 3),
         (
             """fun fib (num n)-> num {
-    if n == 0 return 0 end
-    if n == 1 return 1 end
-    return fib(n-1)+ fib(n-2) } fib(10)""",
+                if n == 0 return 0 end
+                if n == 1 return 1 end
+                return fib(n-1)+ fib(n-2)
+            } fib(10)""",
             55,
         ),
         (
             """
-    # Test demonstrating nested scope
-    fun fib (num n)-> num {
-    fun eqcheck (num a, num cmp) -> bool {
-        return a == cmp
-    }
-    if eqcheck(n, 0) return 0 end
-    if eqcheck(n, 1) return 1 end
-    return fib(n-1)+ fib(n-2) } fib(10)""",
+            # Test demonstrating nested scope
+            fun fib (num n)-> num {
+                fun eqcheck (num a, num cmp) -> bool {
+                    return a == cmp
+                }
+                if eqcheck(n, 0) return 0 end
+                if eqcheck(n, 1) return 1 end
+                return fib(n-1)+ fib(n-2)
+            } fib(10)""",
             55,
         ),
     ],
+    # fmt: on
 )
 @run_test
 def test_fn_advanced(expr, res):
@@ -203,5 +207,29 @@ def test_fn_advanced(expr, res):
     ],
 )
 @run_test
-def test_cond(expr, res):
+def test_if(expr, res):
+    pass
+
+
+@pytest.mark.parametrize(
+    "expr, res",
+    [
+        # fmt: off
+        ("if true 1 else 2 end", 1),
+        ("if false 1 else 2 end", 2),
+        ("num x = 1 if x > 0 1 else 2 end", 1),
+        ("""if true
+                if false
+                    0
+                else
+                    if true
+                        1
+                    end
+                end
+            end""", 1)
+        # fmt: on
+    ],
+)
+@run_test
+def test_if_else(expr, res):
     pass
