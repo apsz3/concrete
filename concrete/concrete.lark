@@ -18,6 +18,7 @@
 ?stmt: simple_stmt
     | compound_stmt
     | block
+    | fun
 //     // | CNAME ":" CNAME -> var_decl
 //     // | CNAME ":" CNAME "="  -> var_decl
 //     // |
@@ -30,10 +31,11 @@
 
 ?small_stmt: expr
     | NAME "=" expr -> assgn_stmt
-    | _name_type_anno -> decl_stmt
-    | _name_type_anno "=" expr -> assgn_anno_stmt
+    | name_type_anno -> decl_stmt
+    | name_type_anno "=" expr -> assgn_anno_stmt
 
-?compound_stmt: ( NAME | _name_type_anno ) "=" block -> block_assgn_stmt
+// not sure why _id doesnt work here
+?compound_stmt: ( NAME | name_type_anno ) "=" block -> block_assgn_stmt
     | if_stmt
 
 inline_if : expr "if" expr [ "else" expr ]
@@ -43,14 +45,16 @@ elifs: "elif" expr block
 
 block : [ STRING ] ":" _NEWLINE [_INDENT stmt+ _DEDENT]
 
+_id : NAME | name_type_anno
+fun : "fun" NAME "(" cs_list{_id} ")"
 ?expr: _value
     | inline_if
     | unary_op expr -> op_unary
     | expr bin_op expr -> op_binop
 
 
-_name_type_anno:  NAME ":" type_anno
-?type_anno: NAME -> type
+name_type_anno:  NAME ":" type_anno
+type_anno: NAME -> type
     | NAME "?" -> type_nullable
 // // want to Inline this, I believe.
 
@@ -126,7 +130,7 @@ COMMENT: /#[^\n]*/
 
 
 // // Comma-separated list (with an optional trailing comma)
-// cs_list{item}: item ("," item)* ","?
+cs_list{item}: item ("," item)* ","?
 // _cs_list{item}: item ("," item)* ","?
 
 // %declare _INDENT _DEDENT
