@@ -1,0 +1,125 @@
+// https://github.com/lark-parser/lark/blob/master/lark/grammars/common.lark
+
+// Code borrowed from python.lark
+
+//Start symbols for the grammar:
+//       single_input is a single interactive statement;
+//       file_input is a module or sequence of commands read from an input file;
+//       eval_input is the input for the eval() functions.
+// NB: compound_stmt in single_input is followed by extra NEWLINE!
+//
+
+// single_input: _NEWLINE | simple_stmt | compound_stmt _NEWLINE
+// file_input: (_NEWLINE | stmt)*
+// eval_input: testlist _NEWLINE*
+
+?start: (_NEWLINE | stmt)*
+
+?stmt: simple_stmt
+    | compound_stmt
+    | block
+//     // | CNAME ":" CNAME -> var_decl
+//     // | CNAME ":" CNAME "="  -> var_decl
+//     // |
+//     // CNAME ";"                   -> declare_```var
+//     //     | "int" CNAME "=" SIGNED_INT ";"    -> declare_and_assign
+//     //     | CNAME "=" SIGNED_INT ";"          -> assign
+//     //     | "print" "(" CNAME ")" ";"         -> print_var
+
+?simple_stmt: small_stmt (";" small_stmt)* [";"] _NEWLINE
+
+?small_stmt: expr
+    | NAME "=" expr -> assgn_stmt
+    | _name_type_anno -> decl_stmt
+    | _name_type_anno "=" expr -> assgn_anno_stmt
+
+
+
+?compound_stmt: NAME "=" block -> block_assgn_stmt
+
+if_stmt : "if" expr block
+if_else_stmt : "if" expr block "else" block
+
+block : ":" _NEWLINE [_INDENT stmt+ _DEDENT]
+
+?expr: _value
+    | unary_op expr -> op_unary
+    | expr bin_op expr -> op_binop
+
+_name_type_anno:  NAME ":" type_anno
+?type_anno: NAME -> type
+    | NAME "?" -> type_nullable
+// // want to Inline this, I believe.
+_value: number | string
+
+
+number: (DEC_NUMBER | HEX_NUMBER | BIN_NUMBER | OCT_NUMBER) -> integer
+    | FLOAT_NUMBER -> float
+    | IMAG_NUMBER -> imaginary
+string: STRING | LONG_STRING
+
+// // ! indicates terminals won't be filtered here -- they'll be kept.
+// // which I think we need, to determine the operator.
+
+bin_op: "+" -> add
+    | "-" -> sub
+    | "*" -> mul
+    | "/" -> div
+    | "//" -> idiv
+    | "%" -> mod
+    | ">>" -> rshift
+    | "<<" -> lshift
+unary_op: "+" -> pos
+    | "-" -> neg
+    | "~" -> tilde
+
+// !add_op: "+" | "-"
+// !_shift_op: "<<"|">>"
+// !_mul_op: "*"|"@"|"/"|"%"|"//"
+NAME: /[^\W\d]\w*/
+
+STRING: /([ubf]?r?|r[ubf])("(?!"").*?(?<!\\)(\\\\)*?"|'(?!'').*?(?<!\\)(\\\\)*?')/i
+LONG_STRING: /([ubf]?r?|r[ubf])(""".*?(?<!\\)(\\\\)*?"""|'''.*?(?<!\\)(\\\\)*?''')/is
+
+_SPECIAL_DEC: "0".."9"        ("_"?  "0".."9"                       )*
+DEC_NUMBER:   "1".."9"        ("_"?  "0".."9"                       )*
+          |   "0"             ("_"?  "0"                            )* /(?![1-9])/
+HEX_NUMBER.2: "0" ("x" | "X") ("_"? ("0".."9" | "a".."f" | "A".."F"))+
+OCT_NUMBER.2: "0" ("o" | "O") ("_"?  "0".."7"                       )+
+BIN_NUMBER.2: "0" ("b" | "B") ("_"?  "0".."1"                       )+
+
+_EXP: ("e"|"E") ["+" | "-"] _SPECIAL_DEC
+DECIMAL: "." _SPECIAL_DEC | _SPECIAL_DEC "." _SPECIAL_DEC?
+FLOAT_NUMBER.2: _SPECIAL_DEC _EXP | DECIMAL _EXP?
+IMAG_NUMBER.2: (_SPECIAL_DEC      | FLOAT_NUMBER) ("J" | "j")
+
+
+// %import common.CNAME
+%import common.SIGNED_INT
+%import common.FLOAT_NUMBER
+%import common.ESCAPED_STRING
+%import common.CNAME
+
+
+// https://lark-parser.readthedocs.io/en/latest/examples/indented_tree.html
+// -- begin indentation
+%import common.WS_INLINE
+%ignore WS_INLINE
+
+%declare _INDENT _DEDENT
+//_NEWLINE: /(\r?\n[\t ]*)+/
+_NEWLINE: ( /\r?\n[\t ]*/ | COMMENT )+
+
+// -- end indentation
+COMMENT: /#[^\n]*/
+%ignore COMMENT
+
+// _INDENT: " " ? "\t"
+
+
+
+// // Comma-separated list (with an optional trailing comma)
+// cs_list{item}: item ("," item)* ","?
+// _cs_list{item}: item ("," item)* ","?
+
+// %declare _INDENT _DEDENT

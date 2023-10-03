@@ -1,7 +1,49 @@
 # ---------- Parser
-from sly import Parser
+# from sly import Parser
 
-from .lexer import CCRLexer
+# from .lexer import CCRLexer
+
+from lark import Lark, Transformer, v_args
+from lark.indenter import Indenter
+
+# class CCRTransformer(Transformer):
+#     def declare_var(self, args):
+#         return ('declare_var', str(args[0]))
+#     def declare_and_assign(self, args):
+#         return ('declare_and_assign', str(args[0]), int(args[1]))
+#     def assign(self, args):
+#         return ('assign', str(args[0]), int(args[1]))
+#     def print_var(self, args):
+#         return ('print_var', str(args[0]))
+
+# ccr_grammar = Lark(grammar, parser='lalr')# transformer=CCRTransformer())
+
+
+def parse(code):
+    class TreeIndenter(Indenter):
+        NL_type = "_NEWLINE"
+        OPEN_PAREN_types = []
+        CLOSE_PAREN_types = []
+        INDENT_type = "_INDENT"
+        DEDENT_type = "_DEDENT"
+        tab_len = 4
+
+    with open("concrete.lark", "r") as fp:
+        grammar = fp.read()
+
+    parser = Lark(
+        grammar, parser="lalr", postlex=TreeIndenter(), maybe_placeholders=True
+    )
+    return parser.parse(code)
+
+
+if __name__ == "__main__":
+    with open("test", "r") as fp:
+        code = fp.read()
+        # Insert a trailing "\n" for parsing ease
+        code += "\n"
+        print(parse(code).pretty())
+
 
 from enum import Enum
 
