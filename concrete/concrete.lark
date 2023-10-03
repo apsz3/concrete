@@ -43,7 +43,7 @@ if_stmt : "if" expr block elifs* [ "else" block ]
 
 elifs: "elif" expr block
 
-block : ":" _NEWLINE [_INDENT stmt+ _DEDENT]
+block : [NAME] ":" _NEWLINE [_INDENT stmt+ _DEDENT]
 
 ?expr: _value
     | unary_op expr -> op_unary
