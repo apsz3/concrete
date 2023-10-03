@@ -33,26 +33,27 @@
     | _name_type_anno -> decl_stmt
     | _name_type_anno "=" expr -> assgn_anno_stmt
 
-
-
-?compound_stmt: NAME "=" block -> block_assgn_stmt
+?compound_stmt: ( NAME | _name_type_anno ) "=" block -> block_assgn_stmt
     | if_stmt
 
-
+inline_if : expr "if" expr [ "else" expr ]
 if_stmt : "if" expr block elifs* [ "else" block ]
 
 elifs: "elif" expr block
 
-block : [NAME] ":" _NEWLINE [_INDENT stmt+ _DEDENT]
+block : [ STRING ] ":" _NEWLINE [_INDENT stmt+ _DEDENT]
 
 ?expr: _value
+    | inline_if
     | unary_op expr -> op_unary
     | expr bin_op expr -> op_binop
+
 
 _name_type_anno:  NAME ":" type_anno
 ?type_anno: NAME -> type
     | NAME "?" -> type_nullable
 // // want to Inline this, I believe.
+
 _value: NAME | number | string
 
 
