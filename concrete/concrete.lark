@@ -36,9 +36,12 @@
 
 
 ?compound_stmt: NAME "=" block -> block_assgn_stmt
+    | if_stmt
 
-if_stmt : "if" expr block
-if_else_stmt : "if" expr block "else" block
+
+if_stmt : "if" expr block elifs* [ "else" block ]
+
+elifs: "elif" expr block
 
 block : ":" _NEWLINE [_INDENT stmt+ _DEDENT]
 
@@ -50,7 +53,7 @@ _name_type_anno:  NAME ":" type_anno
 ?type_anno: NAME -> type
     | NAME "?" -> type_nullable
 // // want to Inline this, I believe.
-_value: number | string
+_value: NAME | number | string
 
 
 number: (DEC_NUMBER | HEX_NUMBER | BIN_NUMBER | OCT_NUMBER) -> integer
