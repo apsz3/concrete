@@ -33,6 +33,7 @@
     | NAME "=" expr -> assgn_stmt
     | name_type_anno -> decl_stmt
     | name_type_anno "=" expr -> assgn_anno_stmt
+    | (return_stmt | cont_stmt | pass_stmt) -> flow_stmt
 
 // not sure why _id doesnt work here
 ?compound_stmt: ( NAME | name_type_anno ) "=" block -> block_assgn_stmt
@@ -40,17 +41,21 @@
 
 inline_if : expr "if" expr [ "else" expr ]
 if_stmt : "if" expr block elifs* [ "else" block ]
-
 elifs: "elif" expr block
 
+return_stmt : "return" expr
+cont_stmt : "continue"
+pass_stmt : "pass"
 block : [ STRING ] ":" _NEWLINE [_INDENT stmt+ _DEDENT]
 
 _id : NAME | name_type_anno
-fun : "fun" NAME "(" cs_list{_id} ")"
+fun : "fun" NAME "(" [cs_list{_id}] ")" ["->" type_anno] block
+fun_call : NAME "(" [cs_list{expr}] ")"
 ?expr: _value
     | inline_if
     | unary_op expr -> op_unary
     | expr bin_op expr -> op_binop
+    | fun_call
 
 
 name_type_anno:  NAME ":" type_anno
