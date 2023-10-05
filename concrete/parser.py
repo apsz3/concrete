@@ -6,15 +6,71 @@
 from lark import Lark, Transformer, v_args
 from lark.indenter import Indenter
 
-# class CCRTransformer(Transformer):
-#     def declare_var(self, args):
-#         return ('declare_var', str(args[0]))
-#     def declare_and_assign(self, args):
-#         return ('declare_and_assign', str(args[0]), int(args[1]))
-#     def assign(self, args):
-#         return ('assign', str(args[0]), int(args[1]))
-#     def print_var(self, args):
-#         return ('print_var', str(args[0]))
+
+class CCRTransformer(Transformer):
+    @v_args(inline=True)
+    def NAME(self, name):
+        return name
+        # return s[1:-1].replace('\\"', '"')
+
+    def assgn_stmt(self, args):
+        return ("assgn_stmt", str(args[0]))
+
+    def decl_stmt(self, args):
+        return ("declare_and_assign", *args)  # str(args[0]), int(args[1]))
+
+    def assgn_anno_stmt(self, args):
+        return ("assign", args)  # str(args[0]), int(args[1]))
+
+    def flow_stmt(self, args):
+        return ("flow_stmt", *args)  # str(args[0]))
+
+    def block_assgn_stmt(self, args):
+        return ("block_assgn_stmt", *args)
+
+    def block(self, args):
+        return ("block", *args)
+
+    def return_stmt(self, args):
+        return ("return", *args)
+
+    def name_type_anno(self, args):
+        return ("name_type_anno", args[0], args[1])
+
+    def type(self, args):
+        return ("type", args[0])
+
+    def type_nullable(self, args):
+        return ("type_nullable", *args)
+
+    @v_args(inline=True)
+    def string(self, s):
+        return s[1:-1].replace('\\"', '"')
+
+    def const_nil(self, args):
+        return None
+
+    def const_false(self, args):
+        return False
+
+    def const_true(self, args):
+        return True
+
+    def STRING(self, args):
+        # args = lark.lexer.Token
+        # .type = STRING
+        # .value = <the string>
+        return args[1:-1]  # Strip leading/trailing `"`
+
+    def float(self, args):
+        return float(args[0])
+
+    def integer(self, args):
+        return int(args[0])
+
+    def imaginary(self, args):
+        return complex(args[0])
+
 
 # ccr_grammar = Lark(grammar, parser='lalr')# transformer=CCRTransformer())
 
@@ -32,8 +88,14 @@ def parse(code):
         grammar = fp.read()
 
     parser = Lark(
-        grammar, parser="lalr", postlex=TreeIndenter(), maybe_placeholders=True
+        grammar,
+        parser="lalr",
+        postlex=TreeIndenter(),
+        maybe_placeholders=True,
+        transformer=CCRTransformer(),
+        propagate_positions=True,
     )
+
     return parser.parse(code)
 
 
