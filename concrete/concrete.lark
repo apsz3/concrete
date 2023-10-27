@@ -32,15 +32,15 @@
 ?small_stmt: expr
     | NAME "=" expr -> assgn_stmt
     | name_type_anno -> decl_stmt
-    | name_type_anno "=" expr -> assgn_anno_stmt
+    | name_type_anno "=" expr -> anno_assgn_stmt
     | (return_stmt | cont_stmt | pass_stmt) -> flow_stmt
 
 // not sure why _id doesnt work here
 ?compound_stmt: ( NAME | name_type_anno ) "=" block -> block_assgn_stmt
-    | if_stmt
+    | if_stmt // | if_else_stmt
 
 inline_if : expr "if" expr [ "else" expr ]
-if_stmt : "if" expr block elifs* [ "else" block ]
+if_stmt : "if" expr block elifs* "else" block
 elifs: "elif" expr block
 
 return_stmt : "return" expr
