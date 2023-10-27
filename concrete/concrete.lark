@@ -29,7 +29,7 @@
 
 ?simple_stmt: small_stmt (";" small_stmt)* [";"] _NEWLINE
 
-?small_stmt: expr
+?small_stmt: expr //-> naked_expr
     | NAME "=" expr -> assgn_stmt
     | name_type_anno -> decl_stmt
     | name_type_anno "=" expr -> anno_assgn_stmt
@@ -48,8 +48,9 @@ cont_stmt : "continue"
 pass_stmt : "pass"
 block : [ STRING ] ":" _NEWLINE [_INDENT stmt+ _DEDENT]
 
-_id : NAME | name_type_anno
-fun : "fun" NAME "(" [cs_list{_id}] ")" ["->" type_anno] block
+?fn_param : NAME -> name_untyped
+    | name_type_anno
+fun : "fun" NAME "(" [cs_list{fn_param}] ")" ["->" type_anno] block
 fun_call : NAME "(" [cs_list{expr}] ")"
 ?expr: _value
     | inline_if

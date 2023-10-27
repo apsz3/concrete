@@ -46,6 +46,12 @@ class CCRTransformer(Transformer):
     def elifs(self, cond, block):
         return ("elif", cond, block)
 
+    @v_args(inline=True)
+    def inline_if(self, expr_if, cond, *expr_else):
+        # Use this so that we can more easily distinguish
+        # between elifs, which might help us with semantic analysis
+        return ("if", expr_if, cond, *expr_else)
+
     def flow_stmt(self, args):
         return ("flow_stmt", *args)  # str(args[0]))
 
@@ -67,7 +73,7 @@ class CCRTransformer(Transformer):
         return ("type", args[0])
 
     def type_nullable(self, args):
-        return ("type_nullable", *args)
+        return ("type_nullable", args)
 
     @v_args(inline=True)
     def fun(self, name, args_list, type_anno, block):
@@ -98,6 +104,15 @@ class CCRTransformer(Transformer):
     @v_args(inline=True)
     def type_nullable(self, _t):
         return ("type_nullable", _t.value)
+
+    @v_args(inline=True)
+    def name_untyped(self, name):
+        return ("name_untyped", name.value)
+
+    # @v_args(inline=True)
+    # def naked_expr(self, name):
+    #     # An expression in a statement
+    #     return ("naked_expr", name)
 
     @v_args(inline=True)
     def NAME(self, name):
