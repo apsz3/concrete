@@ -65,7 +65,7 @@ def compile(stmt, buf, env, scope):
     # TODO: declare things as (expr) in the AST
     # RHS will always be an expr for assgn
     match stmt:
-        case ("var_decl_assgn", _type, var, expr, _):
+        case ("var_decl_assgn", _, var, expr, _):
             # Ignore _type and _lineinfo
             compile(expr, buf, env, scope)
             emit("pid", var, buf=buf)
