@@ -7,7 +7,8 @@ from .cc_ast import (
     find_outermost_name,
     find_path_to,
 )
-from .utils import find_column
+
+# from .utils import _idx #find_column
 from .parser import PARSE_ENUM
 
 
@@ -86,7 +87,7 @@ class Checker:
                 # Could also detect dead code this way.
                 if t != ret_t:
                     _idx, _lineno = child_node[2]
-                    col = find_column(self.TEXT, _idx)
+                    col = _idx  # _idx #find_column(self.TEXT, _idx)
                     type_err = True
                     print(
                         f"TypeError:{_lineno}:{col} Function {fn_name} of return type {ret_t} but got expression of {t}"
@@ -172,7 +173,7 @@ class Checker:
             type_var = node[1]
             var_name = node[2]
             _idx, _lineno = node[3]
-            col = find_column(self.TEXT, _idx)
+            col = _idx  # find_column(self.TEXT, _idx)
             if locals.get(var_name, None) is not None and locals[var_name] != type_var:
                 print(
                     f"TypeError:{_lineno}:{col} Cannot re-define {var_name} of {locals[var_name]} to new type {type_var}"
@@ -188,7 +189,7 @@ class Checker:
             var_name = node[1]
             type_var = locals.get(var_name, TYPE.UNDECL_VAR)
             _idx, _lineno = node[3]
-            col = find_column(self.TEXT, _idx)
+            col = _idx  # find_column(self.TEXT, _idx)
 
             if type_var == TYPE.UNDECL_VAR:
                 print(f"TypeError:{_lineno}:{col} {var_name} not defined")
@@ -216,7 +217,7 @@ class Checker:
                 node[3], env, scope
             )  # If this type is invalid, we do not actually get to see the 'type' of the erroneous node, because its own check is None (TYPE.invalid_type)... we need a type() function that doesn't check.
             _idx, _lineno = node[4]
-            col = find_column(self.TEXT, _idx)
+            col = _idx  # find_column(self.TEXT, _idx)
             if type_var != type_val:
                 print(
                     f"TypeError:{_lineno}:{col} Cannot assign {node[2]} of {type_var} to expression of type {type_val}"
@@ -229,7 +230,7 @@ class Checker:
             # of the const.
             # one could check the arity of the nodes though
             _idx, _lineno = node[3]
-            col = find_column(self.TEXT, _idx)
+            col = _idx  # find_column(self.TEXT, _idx)
 
             op_val = node[2][0]  # the operation; must be loadconst
             if op_val != "loadconst":
@@ -239,7 +240,7 @@ class Checker:
                 return TYPE.INVALID_TYPE
             type_val = self.check(node[2], env, scope)
             _idx, _lineno = node[3]
-            col = find_column(self.TEXT, _idx)
+            col = _idx  # find_column(self.TEXT, _idx)
             locals[node[1]] = type_val
             return type_val
 
@@ -258,7 +259,7 @@ class Checker:
                     print(f"TypeError:{node[1]} not defined")
                     return TYPE.INVALID_TYPE
             _idx, _lineno = node[2]
-            col = find_column(self.TEXT, _idx)
+            col = _idx  # find_column(self.TEXT, _idx)
             # Check that this value is not uninitialized.
             if val in UNINIT_TYPE_MAP.values():
                 print(

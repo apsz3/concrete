@@ -19,6 +19,10 @@ Reserved = [
 ]
 
 
+def fmt(meta):
+    return (meta.column, meta.line)
+
+
 class CCRTransformer(Transformer):
     def start(self, args):
         # Use this so we can group all the AST nodes
@@ -28,24 +32,24 @@ class CCRTransformer(Transformer):
 
     @v_args(inline=True, meta=True)
     def assgn_stmt(self, meta, name, expr):
-        return ("assgn_stmt", name.value, expr)
+        return ("assgn_stmt", name.value, expr, fmt(meta))
 
     @v_args(inline=True, meta=True)
     def decl_stmt(self, meta, args):
         # Index [0] here because we only expect a single
         # input, which is a full name-type-anno
-        return ("decl_stmt", args[0])
+        return ("decl_stmt", args[0], fmt(meta))
 
     @v_args(inline=True, meta=True)
     def anno_assgn_stmt(self, meta, name_anno, val):
-        return ("anno_assgn_stmt", name_anno, val)
+        return ("anno_assgn_stmt", name_anno, val, fmt(meta))
 
     # @v_args(inline=True)
     @v_args(inline=True, meta=True)
     def if_stmt(self, meta, cond, block_if, *block_elifs):
         # We include else here; it is nothing more than
         # just the final block to process.
-        return ("if", cond, block_if, *block_elifs)
+        return ("if", cond, block_if, *block_elifs, fmt(meta))
         # return ("if", cond, block_if, block_elifs)
 
     #   @v_args(meta=True)@v_args(inline=True, inline=True)
@@ -56,29 +60,29 @@ class CCRTransformer(Transformer):
 
     @v_args(inline=True, meta=True)
     def elifs(self, meta, cond, block):
-        return ("elif", cond, block)
+        return ("elif", cond, block, fmt(meta))
 
     @v_args(inline=True, meta=True)
     def inline_if(self, meta, expr_if, cond, *expr_else):
         # Use this so that we can more easily distinguish
         # between elifs, which might help us with semantic analysis
-        return ("if", expr_if, cond, *expr_else)
+        return ("if", expr_if, cond, *expr_else, fmt(meta))
 
     @v_args(meta=True, inline=True)
     def flow_stmt(self, meta, args):
-        return ("flow_stmt", *args)  # str(args[0]))
+        return ("flow_stmt", *args, fmt(meta))  # str(args[0]), fmt(meta))
 
     @v_args(inline=True, meta=True)
     def block_assgn_stmt(self, meta, name, block_stmts):
-        return ("block_assgn_stmt", name.value, block_stmts)
+        return ("block_assgn_stmt", name.value, block_stmts, fmt(meta))
 
     @v_args(inline=True, meta=True)
     def block(self, meta, name, *stmts):
-        return ("block", name, stmts)
+        return ("block", name, stmts, fmt(meta))
 
     @v_args(meta=True, inline=True)
     def return_stmt(self, meta, args):
-        return ("return", *args)
+        return ("return", *args, fmt(meta))
 
     @v_args(meta=True, inline=True)
     def name_type_anno(
@@ -87,11 +91,11 @@ class CCRTransformer(Transformer):
         name,
         type,
     ):
-        return ("name_type_anno", name.value, type)
+        return ("name_type_anno", name.value, type, fmt(meta))
 
     @v_args(meta=True, inline=True)
     def type(self, meta, type):
-        return ("type", type)
+        return ("type", type, fmt(meta))
 
     @v_args(meta=True, inline=True)
     def type_nullable(
@@ -99,15 +103,15 @@ class CCRTransformer(Transformer):
         meta,
         type,
     ):
-        return ("type_nullable", type)
+        return ("type_nullable", type, fmt(meta))
 
     @v_args(inline=True, meta=True)
     def fun(self, meta, name, args_list, type_anno, block):
-        return ("fun", name.value, args_list, type_anno, block)
+        return ("fun", name.value, args_list, type_anno, block, fmt(meta))
 
     @v_args(meta=True, inline=True)
     def cs_list(self, meta, *args):
-        return args
+        return (args, fmt(meta))
 
     # Expressions
     # Operations
@@ -115,26 +119,26 @@ class CCRTransformer(Transformer):
     def op_binop(self, meta, a, op, b):
         # The op_binop is a Tree() in Lark,
         # which must be accessed via `.data`
-        return (op.data, a, b)
+        return (op.data, a, b, fmt(meta))
 
     @v_args(inline=True, meta=True)
     def op_unary(self, meta, op, a):
         # The op_binop is a Tree() in Lark,
         # which must be accessed via `.data`
-        return (op.data, a)
+        return (op.data, a, fmt(meta))
 
     # Values
     @v_args(inline=True, meta=True)
     def type(self, meta, _t):
-        return ("type", _t.value)
+        return ("type", _t.value, fmt(meta))
 
     @v_args(inline=True, meta=True)
     def type_nullable(self, meta, _t):
-        return ("type_nullable", _t.value)
+        return ("type_nullable", _t.value, fmt(meta))
 
     @v_args(inline=True, meta=True)
     def name_untyped(self, meta, name):
-        return ("name_untyped", name.value)
+        return ("name_untyped", name.value, fmt(meta))
 
     #   @v_args(meta=True)@v_args(inline=True, inline=True)
     # def naked_expr(self meta,, name):
@@ -179,7 +183,7 @@ class CCRTransformer(Transformer):
 
     @v_args(meta=True, inline=True)
     def imaginary(self, meta, im):
-        return complex(im)
+        return (complex(im), meta)
 
 
 class TreeIndenter(Indenter):
