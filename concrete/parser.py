@@ -191,11 +191,14 @@ class TreeIndenter(Indenter):
     tab_len = 4
 
 
-with open("concrete.lark", "r") as fp:
-    grammar = fp.read()
+from pathlib import Path
+
+f: Path = Path(__file__).resolve().parent
+with (f / "concrete.lark").open("r") as fp:
+    _grammar = fp.read()
 
 CCRParser = Lark(
-    grammar,
+    _grammar,
     parser="lalr",
     postlex=TreeIndenter(),
     maybe_placeholders=True,
