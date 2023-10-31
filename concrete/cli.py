@@ -7,18 +7,17 @@ from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.history import FileHistory
 
-from concrete.lexer import RESERVED
+
 from concrete.compiler import walk
 from concrete.concrete import Concrete
-from concrete.lexer import CCRLexer
-from concrete.parser import CCRParser
+from concrete.parser import parse, Reserved
 from concrete.exceptions import CCRException
 import traceback
 
 
 def i(ccr, debug):
     # Create a completer with some example words
-    completer = WordCompleter(RESERVED)
+    completer = WordCompleter(Reserved)
 
     # Create a history object to store previous inputs
     history = FileHistory(".ccr_history")
@@ -113,9 +112,9 @@ def do_modes(modes, src):
     # instance doesn't need to pass the src around to both the
     # constructor and the tokenizer method
     for m in modes:
-        if m == "lex":
-            pprint([_ for _ in CCRLexer(src).tokenize(src)])
+        #        if m == "lex":
+        #            pprint([_ for _ in CCRLexer(src).tokenize(src)])
         if m == "parse":
-            pprint(CCRParser(src).parse(CCRLexer(src).tokenize(src)))
+            pprint(parse(src))
         if m == "compile":
             Concrete().bytecode(src)
